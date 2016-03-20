@@ -1,3 +1,985 @@
+SpaceGameboy gb;
+
+void Main(string argument)
+{
+    if(gb == null)
+    {
+        var lcd = GridTerminalSystem.GetBlockWithName("SpaceGameboy LCD") as IMyTextPanel;
+        
+        if(lcd != null)
+        {
+            gb = new SpaceGameboy(lcd);
+            
+            gb.reset(lcd.GetPrivateText());
+        }
+        else
+        {
+            throw new Exception("SpaceGameboy LCD not found!");
+        }        
+    }
+
+    switch(argument)
+    {
+        case "up":
+            break;
+    }
+    gb.frame();
+}
+class GPUData {
+    public int y = -16, x = -8, tile = 0, palette = 0, yflip = 0, xflip = 0, prio = 0, num = 0;
+    public GPUData(int num)
+    {
+        this.num = 0;
+    }
+}
+
+class GPUPalette {
+    public byte[] bg = new byte[4];
+    public byte[] obj0 = new byte[4];
+    public byte[] obj1 = new byte[4];
+}
+
+class GPUScreen {
+    public int width = 160;
+    public int height = 144;
+    public byte[] data = new byte[160*144*4];
+}
+
+class GPU 
+{
+  public byte[] _vram = new byte[8192];
+  public byte[] _oam = new byte[160];
+  private byte[] _reg = new byte[256];
+  private byte[][][] _tilemap = new byte[512][][];
+  private GPUData[] _objdata = new GPUData[40];
+  private List<GPUData> _objdatasorted;
+  private GPUPalette _palette = new GPUPalette();
+  private byte[] _scanrow = new byte[160];
+
+  private byte _curline = 0;
+  private int _curscan = 0;
+  private int _linemode = 0;
+  private int _modeclocks = 0;
+
+  private byte _yscrl = 0;
+  private byte _xscrl = 0;
+  private byte _raster = 0;
+  private int _ints = 0;
+  
+  private int _lcdon = 0;
+  private int _bgon = 0;
+  private int _objon = 0;
+  private int _winon = 0;
+
+  private int _objsize = 0;
+
+  private int _bgtilebase = 0x0000;
+  private int _bgmapbase = 0x1800;
+  private int _wintilebase = 0x1800;
+  
+  char[] colors = new char[] {'\uE00F', '\uE00D', '\uE00E', '\uE006'};
+  
+  IMyTextPanel screen;
+  private GPUScreen _scrn = new GPUScreen();
+  
+  private Z80 z80;
+  private MMU mMU;
+  
+  public GPU(IMyTextPanel screen)
+  {
+      this.screen = screen;
+  }
+  
+  public void update()
+  {
+    screen.ShowTextureOnScreen();
+    screen.ShowPublicTextOnScreen();
+    
+    string buffer = "";    
+
+    for(int y = 0; y < _scrn.height; y++)
+    {
+        for(int x = 0; x < _scrn.width; x++)
+        {
+            buffer += colors[_scrn.data[y*_scrn.width+x]/256*colors.Length];
+        }
+        buffer += "\n";
+    }
+    
+    screen.WritePublicText(buffer, false);      
+  }
+
+  public void reset(Z80 z80, MMU mMU)
+  {
+    this.z80 = z80;
+    this.mMU = mMU;
+
+    Array.Clear(this._vram, 0x00, this._vram.Length);
+    Array.Clear(this._oam, 0x00, this._oam.Length);
+    for(int i=0; i<4; i++) 
+    {
+      this._palette.bg[i] = 0xFF;
+      this._palette.obj0[i] = 0xFF;
+      this._palette.obj1[i] = 0xFF;
+    }
+    for(int i=0;i<512;i++)
+    {
+      this._tilemap[i] = new byte[8][];
+      for(int j=0;j<8;j++)
+      {
+        this._tilemap[i][j] = new byte[8];
+        for(int k=0;k<8;k++)
+        {
+          this._tilemap[i][j][k] = 0x00;
+        }
+      }
+    }
+
+//    Echo("GPU: Initialising screen.");
+ 
+    this._scrn.width = 160;
+    this._scrn.height = 144;
+    Array.Clear(this._scrn.data, 0xFF, this._scrn.data.Length);
+        
+    update();
+    
+    this._curline=0;
+    this._curscan=0;
+    this._linemode=2;
+    this._modeclocks=0;
+    this._yscrl=0;
+    this._xscrl=0;
+    this._raster=0;
+    this._ints = 0;
+
+    this._lcdon = 0;
+    this._bgon = 0;
+    this._objon = 0;
+    this._winon = 0;
+
+    this._objsize = 0;
+    for(int i=0; i<160; i++) this._scanrow[i] = 0;
+
+    for(int i=0; i<40; i++)
+    {
+      this._objdata[i] = new GPUData(i);
+    }
+
+    // Set to values expected by BIOS, to start
+    this._bgtilebase = 0x0000;
+    this._bgmapbase = 0x1800;
+    this._wintilebase = 0x1800;
+
+//    Echo("GPU: Reset.");
+  }
+
+  public void checkline() {
+    this._modeclocks += z80._r.m;
+    if(this._linemode == 0) // In hblank
+    {
+        if(this._modeclocks >= 51)
+        {
+          // End of hblank for last scanline; render screen
+          if(this._curline == 143)
+          {
+            this._linemode = 1;
+            this.update();
+            mMU._if |= 1;
+          }
+          else
+          {
+            this._linemode = 2;
+          }
+          this._curline++;
+          this._curscan += 640;
+          this._modeclocks=0;
+        }
+    }
+    else if(this._linemode == 1) // In vblank
+    {
+        if(this._modeclocks >= 114)
+        {
+          this._modeclocks = 0;
+          this._curline++;
+          if(this._curline > 153)
+          {
+            this._curline = 0;
+	        this._curscan = 0;
+            this._linemode = 2;
+          }
+        }
+    }
+    else if(this._linemode == 2) // In OAM-read mode
+    {
+        if(this._modeclocks >= 20)
+        {
+          this._modeclocks = 0;
+          this._linemode = 3;
+        }
+    }
+    else if(this._linemode == 3) // In VRAM-read mode
+    {
+        // Render scanline at end of allotted time
+        if(this._modeclocks >= 43)
+        {
+          this._modeclocks = 0;
+          this._linemode = 0;
+          if(this._lcdon > 0)
+          {
+            if(this._bgon > 0)
+            {
+              var linebase = this._curscan;
+              var mapbase = this._bgmapbase + ((((this._curline+this._yscrl)&255)>>3)<<5);
+              var y = (this._curline+this._yscrl)&7;
+              var x = this._xscrl&7;
+              var t = (this._xscrl>>3)&31;
+//              var pixel;
+              var w=160;
+
+              if(this._bgtilebase > 0)
+              {
+	            int tile = this._vram[mapbase+t];
+		        if(tile<128) tile=(256+tile);
+                var tilerow = this._tilemap[tile][y];
+                for(;w>=0;w--)
+                {
+		          this._scanrow[160-x] = tilerow[x];
+                  this._scrn.data[linebase+3] = this._palette.bg[tilerow[x]];
+                  x++;
+                  if(x==8) 
+                  { 
+                    t=(t+1)&31;
+                    x=0;
+                    tile=this._vram[mapbase+t];
+                    if(tile<128)
+                    {
+                        tile=(256+tile);                        
+                    }
+                    tilerow = this._tilemap[tile][y]; 
+                  }
+                  linebase+=4;
+                }
+              }
+              else
+              {
+                var tilerow=this._tilemap[this._vram[mapbase+t]][y];
+                for(;w>=0;w--)
+                {
+		          this._scanrow[160-x] = tilerow[x];
+                  this._scrn.data[linebase+3] = this._palette.bg[tilerow[x]];
+                  x++;
+                  if(x==8) { t=(t+1)&31; x=0; tilerow=this._tilemap[this._vram[mapbase+t]][y]; }
+                  linebase+=4;
+                }
+	          }
+            }
+            if(this._objon > 0)
+            {
+              var cnt = 0;
+              if(this._objsize > 0)
+              {
+                for(var i=0; i<40; i++)
+                {
+                }
+              }
+              else
+              {
+                byte[] tilerow;
+                var obj = this._objdatasorted[0];
+                var pal = this._palette.obj0;
+//                var pixel;
+                var x = 0;
+                var linebase = this._curscan;
+                for(var i=0; i<40; i++)
+                {
+                  obj = this._objdatasorted[i];
+                  if(obj.y <= this._curline && (obj.y+8) > this._curline)
+                  {
+                    if(obj.yflip > 0)
+                      tilerow = this._tilemap[obj.tile][7-(this._curline-obj.y)];
+                    else
+                      tilerow = this._tilemap[obj.tile][this._curline-obj.y];
+
+                    if(obj.palette > 0) pal=this._palette.obj1;
+                    else pal=this._palette.obj0;
+
+                    linebase = (this._curline*160+obj.x)*4;
+                    if(obj.xflip > 0)
+                    {
+                      for(x=0; x<8; x++)
+                      {
+                        if(obj.x+x >=0 && obj.x+x < 160)
+                        {
+                          if(tilerow[7-x] > 0 && (obj.prio > 0 || !(this._scanrow[x] > 0)))
+                          {
+                            this._scrn.data[linebase+3] = pal[tilerow[7-x]];
+                          }
+                        }
+                        linebase+=4;
+                      }
+                    }
+                    else
+                    {
+                      for(x=0; x<8; x++)
+                      {
+                        if(obj.x+x >=0 && obj.x+x < 160)
+                        {
+                          if(tilerow[x] > 0 && (obj.prio > 0 || !(this._scanrow[x] > 0)))
+                          {
+                            this._scrn.data[linebase+3] = pal[tilerow[x]];
+                          }
+                        }
+                        linebase+=4;
+                      }
+                    }
+                    cnt++; if(cnt>10) break;
+                  }
+                }
+              }
+            }
+          }
+        }
+    }
+  }
+
+  public void updatetile(int addr,byte val) {
+    var saddr = addr;
+    if((addr&1) > 0) { saddr--; addr--; }
+    var tile = (addr>>4)&511;
+    var y = (addr>>1)&7;
+    int sx;
+    for(var x=0;x<8;x++)
+    {
+      sx=1<<(7-x);
+      this._tilemap[tile][y][x] = (byte)((((this._vram[saddr]&sx)>0)?0x01:0x00) | (((this._vram[saddr+1]&sx)>0)?0x02:0x00));
+    }
+  }
+
+  public void updateoam(int addr,byte val) {
+    addr-=0xFE00;
+    var obj=addr>>2;
+    if(obj<40)
+    {
+      switch(addr&3)
+      {
+        case 0: this._objdata[obj].y=val-16; break;
+        case 1: this._objdata[obj].x=val-8; break;
+        case 2:
+          if(this._objsize>0) this._objdata[obj].tile = (val&0xFE);
+          else this._objdata[obj].tile = val;
+          break;
+        case 3:
+          this._objdata[obj].palette = ((val&0x10)>0)?1:0;
+          this._objdata[obj].xflip = ((val&0x20)>0)?1:0;
+          this._objdata[obj].yflip = ((val&0x40)>0)?1:0;
+          this._objdata[obj].prio = ((val&0x80)>0)?1:0;
+          break;
+     }
+    }
+    this._objdatasorted = new List<GPUData>(this._objdata);
+    this._objdatasorted.Sort(delegate(GPUData a,GPUData b){
+      if(a.x>b.x) return -1;
+      if(a.num>b.num) return -1;
+      return 0;
+    });
+  }
+
+  public byte rb(int addr) {
+    var gaddr = addr-0xFF40;
+    switch(gaddr)
+    {
+      case 0:
+        return (byte)(((this._lcdon>0)?0x80:0)|
+               ((this._bgtilebase==0x0000)?0x10:0)|
+               ((this._bgmapbase==0x1C00)?0x08:0)|
+               ((this._objsize>0)?0x04:0)|
+               ((this._objon>0)?0x02:0)|
+               ((this._bgon>0)?0x01:0));
+
+      case 1:
+        return (byte)((this._curline==this._raster?4:0)|this._linemode);
+
+      case 2:
+        return this._yscrl;
+
+      case 3:
+        return this._xscrl;
+
+      case 4:
+        return this._curline;
+
+      case 5:
+        return this._raster;
+
+      default:
+        return this._reg[gaddr];
+    }
+  }
+
+  public void wb(int addr,byte val) {
+    var gaddr = addr-0xFF40;
+    this._reg[gaddr] = val;
+    switch(gaddr)
+    {
+      case 0:
+        this._lcdon = ((val&0x80)>0)?1:0;
+        this._bgtilebase = ((val&0x10)>0)?0x0000:0x0800;
+        this._bgmapbase = ((val&0x08)>0)?0x1C00:0x1800;
+        this._objsize = ((val&0x04)>0)?1:0;
+        this._objon = ((val&0x02)>0)?1:0;
+        this._bgon = ((val&0x01)>0)?1:0;
+        break;
+
+      case 2:
+        this._yscrl = val;
+        break;
+
+      case 3:
+        this._xscrl = val;
+        break;
+
+      case 5:
+        this._raster = val;
+        break; // this was missing, should it be?
+      // OAM DMA
+      case 6:
+        for(var i=0; i<160; i++)
+        {
+          byte v = mMU.rb((val<<8)+i);
+          this._oam[i] = v;
+          this.updateoam(0xFE00+i, v);
+        }
+        break;
+
+      // BG palette mapping
+      case 7:
+        for(var i=0;i<4;i++)
+        {
+          switch((val>>(i*2))&3)
+          {
+            case 0: this._palette.bg[i] = 255; break;
+            case 1: this._palette.bg[i] = 192; break;
+            case 2: this._palette.bg[i] = 96; break;
+            case 3: this._palette.bg[i] = 0; break;
+          }
+        }
+        break;
+
+      // OBJ0 palette mapping
+      case 8:
+        for(var i=0;i<4;i++)
+        {
+          switch((val>>(i*2))&3)
+          {
+            case 0: this._palette.obj0[i] = 255; break;
+            case 1: this._palette.obj0[i] = 192; break;
+            case 2: this._palette.obj0[i] = 96; break;
+            case 3: this._palette.obj0[i] = 0; break;
+          }
+        }
+        break;
+
+      // OBJ1 palette mapping
+      case 9:
+        for(var i=0;i<4;i++)
+        {
+          switch((val>>(i*2))&3)
+          {
+            case 0: this._palette.obj1[i] = 255; break;
+            case 1: this._palette.obj1[i] = 192; break;
+            case 2: this._palette.obj1[i] = 96; break;
+            case 3: this._palette.obj1[i] = 0; break;
+          }
+        }
+        break;
+    }
+  }
+}
+class KEY 
+{
+  byte[] _keys = new byte[2] {0x0F,0x0F};
+  int _colidx = 0;
+
+  public void reset() {
+    this._keys = new byte[2]{0x0F,0x0F};
+    this._colidx = 0;
+//    Echo("KEY: Reset.");
+  }
+
+  public byte rb() {
+    switch(this._colidx)
+    {
+      case 0x00: return 0x00;
+      case 0x10: return this._keys[0];
+      case 0x20: return this._keys[1];
+      default: return 0x00;
+    }
+  }
+
+  public void wb(int v) {
+    this._colidx = v&0x30;
+  }
+
+  public void keydown(int keyCode) {
+    switch(keyCode)
+    {
+      case 39: this._keys[1] &= 0xE; break;
+      case 37: this._keys[1] &= 0xD; break;
+      case 38: this._keys[1] &= 0xB; break;
+      case 40: this._keys[1] &= 0x7; break;
+      case 90: this._keys[0] &= 0xE; break;
+      case 88: this._keys[0] &= 0xD; break;
+      case 32: this._keys[0] &= 0xB; break;
+      case 13: this._keys[0] &= 0x7; break;
+    }
+  }
+
+  public void keyup(int keyCode) {
+    switch(keyCode)
+    {
+      case 39: this._keys[1] |= 0x1; break;
+      case 37: this._keys[1] |= 0x2; break;
+      case 38: this._keys[1] |= 0x4; break;
+      case 40: this._keys[1] |= 0x8; break;
+      case 90: this._keys[0] |= 0x1; break;
+      case 88: this._keys[0] |= 0x2; break;
+      case 32: this._keys[0] |= 0x5; break;
+      case 13: this._keys[0] |= 0x8; break;
+    }
+  }
+};
+class MMUmbc {
+    public int rombank=0, rambank=0, ramon=0, mode=0;
+}
+class MMU 
+{
+  public byte[] _bios = Convert.FromBase64String("Mf7/ryH/nzLLfCD7ISb/DhE+gDLiDD7z4jI+d3c+/OBHEQQBIRCAGs2VAM2WABN7/jQg8xHYAAYIGhMiIwUg+T4Z6hCZIS+ZDgw9KAgyDSD5Lg8Y82c+ZFfgQj6R4EAEHgIODPBE/pAg+g0g9x0g8g4TJHweg/5iKAYewf5kIAZ74gw+h/LwQpDgQhUg0gUgTxYgGMtPBgTFyxEXwcsRFwUg9SIjIiPJzu1mZswNAAsDcwCDAAwADQAIER+IiQAO3Mxu5t3d2Zm7u2djbg7szN3cmZ+7uTM+PEK5pbmlQkwhBAERqAAaE74g/iN9/jQg9QYZeIYjBSD7hiD+PgHgUA==");
+  private byte[] _rom;
+  private int _carttype = 0;
+  private MMUmbc _mbc0 = new MMUmbc();
+  private MMUmbc _mbc1 = new MMUmbc();
+  int _romoffs = 0x4000;
+  int _ramoffs = 0;
+
+  byte[] _eram = new byte[8192];
+  byte[] _wram = new byte[32768];
+  byte[] _zram = new byte[127];
+
+  public byte _inbios = 1;
+  public byte _ie = 0;
+  public byte _if = 0;
+  
+  GPU gPU;
+  TIMER tIMER;
+  KEY kEY;
+  Z80 z80;
+  
+  public void reset(GPU gPU, TIMER tIMER, KEY kEY, Z80 z80) {
+
+    this.gPU = gPU;
+    this.tIMER = tIMER;
+    this.kEY = kEY;
+    this.z80 = z80;
+
+    int i;
+
+    for(i=0; i<8192; i++) this._wram[i] = 0;
+    for(i=0; i<32768; i++) this._eram[i] = 0;
+    for(i=0; i<127; i++) this._zram[i] = 0;
+
+    this._inbios=1;
+    this._ie=0;
+    this._if=0;
+
+    this._carttype=0;
+    this._mbc0 = new MMUmbc();
+    this._mbc1 = new MMUmbc();
+    this._romoffs=0x4000;
+    this._ramoffs=0;
+
+//    Echo("MMU: Reset.");
+  }
+
+  public void load(string file) {
+    this._rom=Convert.FromBase64String(file);
+    this._carttype = this._rom[0x0147];
+
+//    Echo("MMU: ROM loaded, "+this._rom.Length+" bytes.");
+  }
+
+  public byte rb(int addr) {
+    int v = addr&0xF000;   
+    if(v == 0x0000)
+    {
+      // ROM bank 0
+        if(this._inbios > 0)
+        {
+          if(addr<0x0100) return this._bios[addr];
+          else if(z80._r.pc == 0x0100)
+          {
+            this._inbios = 0;
+    //	    Echo("MMU: Leaving BIOS.");
+          }
+        }
+        else
+        {
+          return this._rom[addr];
+        }
+        return this._rom[addr];
+    }
+    else if(v <= 0x3000)
+    {
+        return this._rom[addr];
+    }
+    else if(v <= 0x7000)
+    {
+      // ROM bank 1
+        return this._rom[this._romoffs+(addr&0x3FFF)];
+    }
+    else if(v <= 0x9000)
+    {
+      // VRAM
+        return gPU._vram[addr&0x1FFF];
+    }
+    else if(v <= 0xB000)
+    {
+      // External RAM
+        return this._eram[this._ramoffs+(addr&0x1FFF)];
+    }
+    else if(v <= 0xE000)
+    {
+      // Work RAM and echo
+        return this._wram[addr&0x1FFF];
+    }
+    else if(v <= 0xF000)
+    {
+        int w = addr&0x0F00;
+      // Everything else
+        if(w <= 0xD00)
+        {
+          // Echo RAM
+            return this._wram[addr&0x1FFF];
+        }
+        else if(w <= 0xE00)
+        {
+              // OAM
+            return (byte)(((addr&0xFF)<0xA0) ? gPU._oam[addr&0xFF] : 0x00);
+        }
+        else if(w <= 0xF00)
+        {
+              // Zeropage RAM, I/O, interrupts
+            if(addr == 0xFFFF) { return this._ie; }
+            else if(addr > 0xFF7F) { return this._zram[addr&0x7F]; }
+            else switch(addr&0xF0)
+            {
+              case 0x00:
+                switch(addr&0xF)
+                {
+                  case 0: return kEY.rb();    // JOYP
+                  case 4: case 5: case 6: case 7:
+                    return tIMER.rb(addr);
+                  case 15: return this._if;    // Interrupt flags
+                  default: return 0x00;
+                }
+              case 0x10: case 0x20: case 0x30:
+                return 0x00;
+
+              case 0x40: case 0x50: case 0x60: case 0x70:
+                return gPU.rb(addr);
+            }
+        }
+    }
+    throw new Exception("Shouldn't have made it here");
+    return 0x00;
+  }
+
+  public int rw(int addr) { return this.rb(addr)+(this.rb(addr+1)<<8); }
+
+  public void wb(int addr, byte val) {
+    int v = addr&0xF000;
+    if(v == 0x0000 || v == 0x1000)
+    {
+      // ROM bank 0
+      // MBC1: Turn external RAM on
+        switch(this._carttype)
+        {
+          case 1:
+            this._mbc1.ramon = ((val&0xF)==0xA)?1:0;
+            break;
+        }
+    }
+    else if(v == 0x2000 || v == 0x3000)
+    {
+      // MBC1: ROM bank switch
+        switch(this._carttype)
+        {
+          case 1:
+            this._mbc1.rombank &= 0x60;
+            val &= 0x1F;
+            if(!(val>0)) val=1;
+            this._mbc1.rombank |= val;
+            this._romoffs = this._mbc1.rombank * 0x4000;
+            break;
+        }
+
+    }
+    else if(v == 0x4000 || v == 0x5000)
+    {
+      // ROM bank 1
+      // MBC1: RAM bank switch
+        switch(this._carttype)
+        {
+          case 1:
+            if(this._mbc1.mode > 0)
+            {
+              this._mbc1.rambank = (val&3);
+              this._ramoffs = this._mbc1.rambank * 0x2000;
+            }
+            else
+            {
+              this._mbc1.rombank &= 0x1F;
+              this._mbc1.rombank |= ((val&3)<<5);
+              this._romoffs = this._mbc1.rombank * 0x4000;
+            }
+            break;
+        }
+    }
+    else if(v == 0x6000 || v == 0x7000)
+    {
+        switch(this._carttype)
+        {
+          case 1:
+            this._mbc1.mode = val&1;
+            break;
+        }
+    }
+    else if(v == 0x8000 || v == 0x9000) // VRAM
+    {
+        gPU._vram[addr&0x1FFF] = val;
+        gPU.updatetile(addr&0x1FFF, val);
+    }
+    else if(v == 0xA000 || v == 0xB000) // External RAM
+    {
+        this._eram[this._ramoffs+(addr&0x1FFF)] = val;
+    }
+    else if(v == 0xC000 || v == 0xD000 || v == 0xE000) // Work RAM and echo
+    {
+        this._wram[addr&0x1FFF] = val;
+    }
+    else if(v == 0xF000) // Everything else
+    {
+        var w = addr&0x0F00;
+        if(w <= 0xD00)
+        {
+          // Echo RAM
+            this._wram[addr&0x1FFF] = val;
+        }
+        else if(w == 0xE00)
+        {
+              // OAM
+            if((addr&0xFF)<0xA0) gPU._oam[addr&0xFF] = val;
+            gPU.updateoam(addr,val);
+        }
+        else if(w == 0xF00)
+        {
+              // Zeropage RAM, I/O, interrupts
+            if(addr == 0xFFFF) { this._ie = val; }
+            else if(addr > 0xFF7F) { this._zram[addr&0x7F]=val; }
+            else switch(addr&0xF0)
+            {
+              case 0x00:
+                switch(addr&0xF)
+                {
+                  case 0: kEY.wb(val); break;
+                  case 4: case 5: case 6: case 7: tIMER.wb(addr, val); break;
+                  case 15: this._if = val; break;
+                }
+                break;
+
+              case 0x10: case 0x20: case 0x30:
+                break;
+
+              case 0x40: case 0x50: case 0x60: case 0x70:
+                gPU.wb(addr,val);
+                break;
+            }
+        }
+    }
+  }
+
+  public void ww(int addr,int val) { this.wb(addr,(byte)(val&0xFF)); this.wb(addr+1,(byte)(val>>8)); }
+}
+public class SpaceGameboy
+{
+  int run_interval = 0;
+  string trace = "";
+
+  private GPU gPU;
+  private MMU mMU;
+  private Z80 z80;
+  private KEY kEY;
+  private TIMER tIMER;
+  
+  public SpaceGameboy(IMyTextPanel screen)
+  {
+      this.gPU = new GPU(screen);
+      this.mMU = new MMU();
+      this.z80 = new Z80();
+      this.kEY = new KEY();
+      this.tIMER = new TIMER();
+  }
+  
+  public void frame() {
+    var fclock = z80._clock.m+17556;
+    //var brk = document.getElementById('breakpoint').value;
+    do {
+      if(z80._halt>0) z80._r.m=1;
+      else
+      {
+      //  z80._r.r = (z80._r.r+1) & 127;
+        z80._map[mMU.rb(z80._r.pc++)]();
+        z80._r.pc &= 65535;
+      }
+      if(z80._r.ime >0 && mMU._ie>0 && mMU._if>0)
+      {
+        z80._halt=0; z80._r.ime=0;
+	var ifired = mMU._ie & mMU._if;
+        if((ifired&1)>0) { mMU._if &= 0xFE; z80._ops.RST40(); }
+        else if((ifired&2)>0) { mMU._if &= 0xFD; z80._ops.RST48(); }
+        else if((ifired&4)>0) { mMU._if &= 0xFB; z80._ops.RST50(); }
+        else if((ifired&8)>0) { mMU._if &= 0xF7; z80._ops.RST58(); }
+        else if((ifired&16)>0) { mMU._if &= 0xEF; z80._ops.RST60(); }
+	else { z80._r.ime=1; }
+      }
+      z80._clock.m += z80._r.m;
+      gPU.checkline();
+      tIMER.inc();
+    } while(z80._clock.m < fclock);
+
+  }
+  
+  public void reset(string file) {
+    gPU.reset(this.z80, this.mMU); mMU.reset(gPU, tIMER, kEY, z80); z80.reset(mMU); kEY.reset(); tIMER.reset(mMU, z80);
+    z80._r.pc=0x100;mMU._inbios=0;z80._r.sp=0xFFFE;/*z80._r.hl=0x014D;*/z80._r.c=0x13;z80._r.e=0xD8;z80._r.a=1;
+    //TODO:                                              ^ this was missing, I don't know if it is supposed to be set
+    mMU.load(file);
+    this.run();
+  
+//    Echo("MAIN: Reset.");
+  }
+  
+  public void run() {
+    z80._stop = 0;
+  }
+ 
+    public void keydown(int keyCode)
+    {
+        kEY.keydown(keyCode);
+    }
+    
+    public void keyup(int keyCode)
+    {
+        kEY.keyup(keyCode);        
+    }
+}
+class TIMERclock {
+    public int main = 0, sub = 0, div = 0;
+}
+
+class TIMER 
+{
+  private byte _div = 0;
+  private byte _tma = 0;
+  private byte _tima = 0;
+  private byte _tac = 0;
+
+  private TIMERclock _clock = new TIMERclock();
+
+  MMU mMU;
+  Z80 z80;
+  
+  public void reset(MMU mMU, Z80 z80) {
+    this.mMU = mMU;
+    this.z80 = z80;
+    this._div = 0;
+    this._tma = 0;
+    this._tima = 0;
+    this._tac = 0;
+    this._clock.main = 0;
+    this._clock.sub = 0;
+    this._clock.div = 0;
+//    Echo("TIMER: Reset.");
+  }
+
+  public void step() {
+    this._tima++;
+    this._clock.main = 0;
+    if(this._tima > 255)
+    {
+      this._tima = this._tma;
+      mMU._if |= 4;
+    }
+  }
+
+  public void inc() {
+    var oldclk = this._clock.main;
+
+    this._clock.sub += z80._r.m;
+    if(this._clock.sub > 3)
+    {
+      this._clock.main++;
+      this._clock.sub -= 4;
+
+      this._clock.div++;
+      if(this._clock.div==16)
+      {
+        this._clock.div = 0;
+	this._div++;
+	this._div &= 255;
+      }
+    }
+
+    if((this._tac & 4)>0)
+    {
+      switch(this._tac & 3)
+      {
+        case 0:
+	  if(this._clock.main >= 64) this.step();
+	  break;
+	case 1:
+	  if(this._clock.main >=  1) this.step();
+	  break;
+	case 2:
+	  if(this._clock.main >=  4) this.step();
+	  break;
+	case 3:
+	  if(this._clock.main >= 16) this.step();
+	  break;
+      }
+    }
+  }
+
+  public byte rb(int addr) {
+    switch(addr)
+    {
+      case 0xFF04: return this._div;
+      case 0xFF05: return this._tima;
+      case 0xFF06: return this._tma;
+      case 0xFF07: return this._tac;
+    }
+    return 0x00;
+  }
+
+  public void wb(int addr, byte val) {
+    switch(addr)
+    {
+      case 0xFF04: this._div = 0x00; break;
+      case 0xFF05: this._tima = val; break;
+      case 0xFF06: this._tma = val; break;
+      case 0xFF07: this._tac = (byte)(val&7); break;
+    }
+  }
+}
 /**
  * jsGB: Z80 core
  * Imran Nazar, May 2009

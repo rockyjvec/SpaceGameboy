@@ -4,10 +4,10 @@ class TIMERclock {
 
 class TIMER 
 {
-  private int _div = 0;
-  private int _tma = 0;
-  private int _tima = 0;
-  private int _tac = 0;
+  private byte _div = 0;
+  private byte _tma = 0;
+  private byte _tima = 0;
+  private byte _tac = 0;
 
   private TIMERclock _clock = new TIMERclock();
 
@@ -75,7 +75,7 @@ class TIMER
     }
   }
 
-  public int rb(int addr) {
+  public byte rb(int addr) {
     switch(addr)
     {
       case 0xFF04: return this._div;
@@ -83,16 +83,16 @@ class TIMER
       case 0xFF06: return this._tma;
       case 0xFF07: return this._tac;
     }
-    return 0;
+    return 0x00;
   }
 
-  public void wb(int addr, int val) {
+  public void wb(int addr, byte val) {
     switch(addr)
     {
-      case 0xFF04: this._div = 0; break;
+      case 0xFF04: this._div = 0x00; break;
       case 0xFF05: this._tima = val; break;
       case 0xFF06: this._tma = val; break;
-      case 0xFF07: this._tac = val&7; break;
+      case 0xFF07: this._tac = (byte)(val&7); break;
     }
   }
 }

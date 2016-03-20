@@ -1,4 +1,4 @@
-class SpaceGameboy
+public class SpaceGameboy
 {
   int run_interval = 0;
   string trace = "";

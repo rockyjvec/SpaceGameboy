@@ -3,38 +3,21 @@ class MMUmbc {
 }
 class MMU 
 {
-  private char[] _bios = new char[]{
-    (char)0x31, (char)0xFE, (char)0xFF, (char)0xAF, (char)0x21, (char)0xFF, (char)0x9F, (char)0x32, (char)0xCB, (char)0x7C, (char)0x20, (char)0xFB, (char)0x21, (char)0x26, (char)0xFF, (char)0x0E,
-    (char)0x11, (char)0x3E, (char)0x80, (char)0x32, (char)0xE2, (char)0x0C, (char)0x3E, (char)0xF3, (char)0xE2, (char)0x32, (char)0x3E, (char)0x77, (char)0x77, (char)0x3E, (char)0xFC, (char)0xE0,
-    (char)0x47, (char)0x11, (char)0x04, (char)0x01, (char)0x21, (char)0x10, (char)0x80, (char)0x1A, (char)0xCD, (char)0x95, (char)0x00, (char)0xCD, (char)0x96, (char)0x00, (char)0x13, (char)0x7B,
-    (char)0xFE, (char)0x34, (char)0x20, (char)0xF3, (char)0x11, (char)0xD8, (char)0x00, (char)0x06, (char)0x08, (char)0x1A, (char)0x13, (char)0x22, (char)0x23, (char)0x05, (char)0x20, (char)0xF9,
-    (char)0x3E, (char)0x19, (char)0xEA, (char)0x10, (char)0x99, (char)0x21, (char)0x2F, (char)0x99, (char)0x0E, (char)0x0C, (char)0x3D, (char)0x28, (char)0x08, (char)0x32, (char)0x0D, (char)0x20,
-    (char)0xF9, (char)0x2E, (char)0x0F, (char)0x18, (char)0xF3, (char)0x67, (char)0x3E, (char)0x64, (char)0x57, (char)0xE0, (char)0x42, (char)0x3E, (char)0x91, (char)0xE0, (char)0x40, (char)0x04,
-    (char)0x1E, (char)0x02, (char)0x0E, (char)0x0C, (char)0xF0, (char)0x44, (char)0xFE, (char)0x90, (char)0x20, (char)0xFA, (char)0x0D, (char)0x20, (char)0xF7, (char)0x1D, (char)0x20, (char)0xF2,
-    (char)0x0E, (char)0x13, (char)0x24, (char)0x7C, (char)0x1E, (char)0x83, (char)0xFE, (char)0x62, (char)0x28, (char)0x06, (char)0x1E, (char)0xC1, (char)0xFE, (char)0x64, (char)0x20, (char)0x06,
-    (char)0x7B, (char)0xE2, (char)0x0C, (char)0x3E, (char)0x87, (char)0xF2, (char)0xF0, (char)0x42, (char)0x90, (char)0xE0, (char)0x42, (char)0x15, (char)0x20, (char)0xD2, (char)0x05, (char)0x20,
-    (char)0x4F, (char)0x16, (char)0x20, (char)0x18, (char)0xCB, (char)0x4F, (char)0x06, (char)0x04, (char)0xC5, (char)0xCB, (char)0x11, (char)0x17, (char)0xC1, (char)0xCB, (char)0x11, (char)0x17,
-    (char)0x05, (char)0x20, (char)0xF5, (char)0x22, (char)0x23, (char)0x22, (char)0x23, (char)0xC9, (char)0xCE, (char)0xED, (char)0x66, (char)0x66, (char)0xCC, (char)0x0D, (char)0x00, (char)0x0B,
-    (char)0x03, (char)0x73, (char)0x00, (char)0x83, (char)0x00, (char)0x0C, (char)0x00, (char)0x0D, (char)0x00, (char)0x08, (char)0x11, (char)0x1F, (char)0x88, (char)0x89, (char)0x00, (char)0x0E,
-    (char)0xDC, (char)0xCC, (char)0x6E, (char)0xE6, (char)0xDD, (char)0xDD, (char)0xD9, (char)0x99, (char)0xBB, (char)0xBB, (char)0x67, (char)0x63, (char)0x6E, (char)0x0E, (char)0xEC, (char)0xCC,
-    (char)0xDD, (char)0xDC, (char)0x99, (char)0x9F, (char)0xBB, (char)0xB9, (char)0x33, (char)0x3E, (char)0x3c, (char)0x42, (char)0xB9, (char)0xA5, (char)0xB9, (char)0xA5, (char)0x42, (char)0x4C,
-    (char)0x21, (char)0x04, (char)0x01, (char)0x11, (char)0xA8, (char)0x00, (char)0x1A, (char)0x13, (char)0xBE, (char)0x20, (char)0xFE, (char)0x23, (char)0x7D, (char)0xFE, (char)0x34, (char)0x20,
-    (char)0xF5, (char)0x06, (char)0x19, (char)0x78, (char)0x86, (char)0x23, (char)0x05, (char)0x20, (char)0xFB, (char)0x86, (char)0x20, (char)0xFE, (char)0x3E, (char)0x01, (char)0xE0, (char)0x50
-  };
-  private string _rom = "";
+  public byte[] _bios = Convert.FromBase64String("Mf7/ryH/nzLLfCD7ISb/DhE+gDLiDD7z4jI+d3c+/OBHEQQBIRCAGs2VAM2WABN7/jQg8xHYAAYIGhMiIwUg+T4Z6hCZIS+ZDgw9KAgyDSD5Lg8Y82c+ZFfgQj6R4EAEHgIODPBE/pAg+g0g9x0g8g4TJHweg/5iKAYewf5kIAZ74gw+h/LwQpDgQhUg0gUgTxYgGMtPBgTFyxEXwcsRFwUg9SIjIiPJzu1mZswNAAsDcwCDAAwADQAIER+IiQAO3Mxu5t3d2Zm7u2djbg7szN3cmZ+7uTM+PEK5pbmlQkwhBAERqAAaE74g/iN9/jQg9QYZeIYjBSD7hiD+PgHgUA==");
+  private byte[] _rom;
   private int _carttype = 0;
   private MMUmbc _mbc0 = new MMUmbc();
   private MMUmbc _mbc1 = new MMUmbc();
   int _romoffs = 0x4000;
   int _ramoffs = 0;
 
-  char[] _eram = new char[8192];
-  char[] _wram = new char[32768];
-  char[] _zram = new char[127];
+  byte[] _eram = new byte[8192];
+  byte[] _wram = new byte[32768];
+  byte[] _zram = new byte[127];
 
-  public int _inbios = 1;
-  public int _ie = 0;
-  public int _if = 0;
+  public byte _inbios = 1;
+  public byte _ie = 0;
+  public byte _if = 0;
   
   GPU gPU;
   TIMER tIMER;
@@ -50,9 +33,9 @@ class MMU
 
     int i;
 
-    for(i=0; i<8192; i++) this._wram[i] = (char)0;
-    for(i=0; i<32768; i++) this._eram[i] = (char)0;
-    for(i=0; i<127; i++) this._zram[i] = (char)0;
+    for(i=0; i<8192; i++) this._wram[i] = 0;
+    for(i=0; i<32768; i++) this._eram[i] = 0;
+    for(i=0; i<127; i++) this._zram[i] = 0;
 
     this._inbios=1;
     this._ie=0;
@@ -68,17 +51,17 @@ class MMU
   }
 
   public void load(string file) {
-    this._rom=file;
+    this._rom=Convert.FromBase64String(file);
     this._carttype = this._rom[0x0147];
 
 //    Echo("MMU: ROM loaded, "+this._rom.Length+" bytes.");
   }
 
-  public int rb(int addr) {
-    switch(addr&0xF000)
+  public byte rb(int addr) {
+    int v = addr&0xF000;   
+    if(v == 0x0000)
     {
       // ROM bank 0
-      case 0x0000:
         if(this._inbios > 0)
         {
           if(addr<0x0100) return this._bios[addr];
@@ -93,45 +76,48 @@ class MMU
           return this._rom[addr];
         }
         return this._rom[addr];
-
-      case 0x1000:
-      case 0x2000:
-      case 0x3000:
+    }
+    else if(v <= 0x3000)
+    {
         return this._rom[addr];
-
+    }
+    else if(v <= 0x7000)
+    {
       // ROM bank 1
-      case 0x4000: case 0x5000: case 0x6000: case 0x7000:
         return this._rom[this._romoffs+(addr&0x3FFF)];
-
+    }
+    else if(v <= 0x9000)
+    {
       // VRAM
-      case 0x8000: case 0x9000:
         return gPU._vram[addr&0x1FFF];
-
+    }
+    else if(v <= 0xB000)
+    {
       // External RAM
-      case 0xA000: case 0xB000:
         return this._eram[this._ramoffs+(addr&0x1FFF)];
-
+    }
+    else if(v <= 0xE000)
+    {
       // Work RAM and echo
-      case 0xC000: case 0xD000: case 0xE000:
         return this._wram[addr&0x1FFF];
-
+    }
+    else if(v <= 0xF000)
+    {
+        int w = addr&0x0F00;
       // Everything else
-      case 0xF000:
-        switch(addr&0x0F00)
+        if(w <= 0xD00)
         {
           // Echo RAM
-          case 0x000: case 0x100: case 0x200: case 0x300:
-          case 0x400: case 0x500: case 0x600: case 0x700:
-          case 0x800: case 0x900: case 0xA00: case 0xB00:
-          case 0xC00: case 0xD00:
             return this._wram[addr&0x1FFF];
-
+        }
+        else if(w <= 0xE00)
+        {
               // OAM
-          case 0xE00:
-            return ((addr&0xFF)<0xA0) ? gPU._oam[addr&0xFF] : 0;
-
+            return (byte)(((addr&0xFF)<0xA0) ? gPU._oam[addr&0xFF] : 0x00);
+        }
+        else if(w <= 0xF00)
+        {
               // Zeropage RAM, I/O, interrupts
-          case 0xF00:
             if(addr == 0xFFFF) { return this._ie; }
             else if(addr > 0xFF7F) { return this._zram[addr&0x7F]; }
             else switch(addr&0xF0)
@@ -143,55 +129,54 @@ class MMU
                   case 4: case 5: case 6: case 7:
                     return tIMER.rb(addr);
                   case 15: return this._if;    // Interrupt flags
-                  default: return 0;
+                  default: return 0x00;
                 }
               case 0x10: case 0x20: case 0x30:
-                return 0;
+                return 0x00;
 
               case 0x40: case 0x50: case 0x60: case 0x70:
                 return gPU.rb(addr);
             }
-            break;
         }
-        break;
     }
     throw new Exception("Shouldn't have made it here");
-    return 0;
+    return 0x00;
   }
 
   public int rw(int addr) { return this.rb(addr)+(this.rb(addr+1)<<8); }
 
-  public void wb(int addr, int val) {
-    switch(addr&0xF000)
+  public void wb(int addr, byte val) {
+    int v = addr&0xF000;
+    if(v == 0x0000 || v == 0x1000)
     {
       // ROM bank 0
       // MBC1: Turn external RAM on
-      case 0x0000: case 0x1000:
         switch(this._carttype)
-	{
-	  case 1:
-	    this._mbc1.ramon = ((val&0xF)==0xA)?1:0;
-	    break;
-	}
-	break;
-
+        {
+          case 1:
+            this._mbc1.ramon = ((val&0xF)==0xA)?1:0;
+            break;
+        }
+    }
+    else if(v == 0x2000 || v == 0x3000)
+    {
       // MBC1: ROM bank switch
-      case 0x2000: case 0x3000:
         switch(this._carttype)
-	{
-	  case 1:
-	    this._mbc1.rombank &= 0x60;
-	    val &= 0x1F;
-	    if(!(val>0)) val=1;
-	    this._mbc1.rombank |= val;
-	    this._romoffs = this._mbc1.rombank * 0x4000;
-	    break;
-	}
-        break;
+        {
+          case 1:
+            this._mbc1.rombank &= 0x60;
+            val &= 0x1F;
+            if(!(val>0)) val=1;
+            this._mbc1.rombank |= val;
+            this._romoffs = this._mbc1.rombank * 0x4000;
+            break;
+        }
 
+    }
+    else if(v == 0x4000 || v == 0x5000)
+    {
       // ROM bank 1
       // MBC1: RAM bank switch
-      case 0x4000: case 0x5000:
         switch(this._carttype)
         {
           case 1:
@@ -208,55 +193,48 @@ class MMU
             }
             break;
         }
-        break;
-
-      case 0x6000: case 0x7000:
+    }
+    else if(v == 0x6000 || v == 0x7000)
+    {
         switch(this._carttype)
         {
           case 1:
             this._mbc1.mode = val&1;
             break;
         }
-        break;
-
-      // VRAM
-      case 0x8000: case 0x9000:
-        gPU._vram[addr&0x1FFF] = (char)val;
+    }
+    else if(v == 0x8000 || v == 0x9000) // VRAM
+    {
+        gPU._vram[addr&0x1FFF] = val;
         gPU.updatetile(addr&0x1FFF, val);
-        break;
-
-      // External RAM
-      case 0xA000: case 0xB000:
-        this._eram[this._ramoffs+(addr&0x1FFF)] = (char)val;
-        break;
-
-      // Work RAM and echo
-      case 0xC000: case 0xD000: case 0xE000:
-        this._wram[addr&0x1FFF] = (char)val;
-        break;
-
-      // Everything else
-      case 0xF000:
-        switch(addr&0x0F00)
+    }
+    else if(v == 0xA000 || v == 0xB000) // External RAM
+    {
+        this._eram[this._ramoffs+(addr&0x1FFF)] = val;
+    }
+    else if(v == 0xC000 || v == 0xD000 || v == 0xE000) // Work RAM and echo
+    {
+        this._wram[addr&0x1FFF] = val;
+    }
+    else if(v == 0xF000) // Everything else
+    {
+        var w = addr&0x0F00;
+        if(w <= 0xD00)
         {
           // Echo RAM
-          case 0x000: case 0x100: case 0x200: case 0x300:
-          case 0x400: case 0x500: case 0x600: case 0x700:
-          case 0x800: case 0x900: case 0xA00: case 0xB00:
-          case 0xC00: case 0xD00:
-            this._wram[addr&0x1FFF] = (char)val;
-            break;
-
+            this._wram[addr&0x1FFF] = val;
+        }
+        else if(w == 0xE00)
+        {
               // OAM
-          case 0xE00:
-            if((addr&0xFF)<0xA0) gPU._oam[addr&0xFF] = (char)val;
+            if((addr&0xFF)<0xA0) gPU._oam[addr&0xFF] = val;
             gPU.updateoam(addr,val);
-            break;
-
+        }
+        else if(w == 0xF00)
+        {
               // Zeropage RAM, I/O, interrupts
-          case 0xF00:
             if(addr == 0xFFFF) { this._ie = val; }
-            else if(addr > 0xFF7F) { this._zram[addr&0x7F]=(char)val; }
+            else if(addr > 0xFF7F) { this._zram[addr&0x7F]=val; }
             else switch(addr&0xF0)
             {
               case 0x00:
@@ -275,11 +253,9 @@ class MMU
                 gPU.wb(addr,val);
                 break;
             }
-            break;
         }
-        break;
     }
   }
 
-  public void ww(int addr,int val) { this.wb(addr,val&255); this.wb(addr+1,val>>8); }
+  public void ww(int addr,int val) { this.wb(addr,(byte)(val&0xFF)); this.wb(addr+1,(byte)(val>>8)); }
 }
