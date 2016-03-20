@@ -20,840 +20,827 @@ class Z80clock {
     public int m = 0;
 }
 
-class Z80ops {
-    Z80 z80;
-    MMU mMU;
-    public Z80ops(Z80 z80, MMU mMU)
-    {
-        this.z80 = z80;
-        this.mMU = mMU;
-    }
-
-    /*--- Load/store ---*/
-    public void LDrr_bb() { z80._r.b=z80._r.b; z80._r.m=1; }
-    public void LDrr_bc() { z80._r.b=z80._r.c; z80._r.m=1; }
-    public void LDrr_bd() { z80._r.b=z80._r.d; z80._r.m=1; }
-    public void LDrr_be() { z80._r.b=z80._r.e; z80._r.m=1; }
-    public void LDrr_bh() { z80._r.b=z80._r.h; z80._r.m=1; }
-    public void LDrr_bl() { z80._r.b=z80._r.l; z80._r.m=1; }
-    public void LDrr_ba() { z80._r.b=z80._r.a; z80._r.m=1; }
-    public void LDrr_cb() { z80._r.c=z80._r.b; z80._r.m=1; }
-    public void LDrr_cc() { z80._r.c=z80._r.c; z80._r.m=1; }
-    public void LDrr_cd() { z80._r.c=z80._r.d; z80._r.m=1; }
-    public void LDrr_ce() { z80._r.c=z80._r.e; z80._r.m=1; }
-    public void LDrr_ch() { z80._r.c=z80._r.h; z80._r.m=1; }
-    public void LDrr_cl() { z80._r.c=z80._r.l; z80._r.m=1; }
-    public void LDrr_ca() { z80._r.c=z80._r.a; z80._r.m=1; }
-    public void LDrr_db() { z80._r.d=z80._r.b; z80._r.m=1; }
-    public void LDrr_dc() { z80._r.d=z80._r.c; z80._r.m=1; }
-    public void LDrr_dd() { z80._r.d=z80._r.d; z80._r.m=1; }
-    public void LDrr_de() { z80._r.d=z80._r.e; z80._r.m=1; }
-    public void LDrr_dh() { z80._r.d=z80._r.h; z80._r.m=1; }
-    public void LDrr_dl() { z80._r.d=z80._r.l; z80._r.m=1; }
-    public void LDrr_da() { z80._r.d=z80._r.a; z80._r.m=1; }
-    public void LDrr_eb() { z80._r.e=z80._r.b; z80._r.m=1; }
-    public void LDrr_ec() { z80._r.e=z80._r.c; z80._r.m=1; }
-    public void LDrr_ed() { z80._r.e=z80._r.d; z80._r.m=1; }
-    public void LDrr_ee() { z80._r.e=z80._r.e; z80._r.m=1; }
-    public void LDrr_eh() { z80._r.e=z80._r.h; z80._r.m=1; }
-    public void LDrr_el() { z80._r.e=z80._r.l; z80._r.m=1; }
-    public void LDrr_ea() { z80._r.e=z80._r.a; z80._r.m=1; }
-    public void LDrr_hb() { z80._r.h=z80._r.b; z80._r.m=1; }
-    public void LDrr_hc() { z80._r.h=z80._r.c; z80._r.m=1; }
-    public void LDrr_hd() { z80._r.h=z80._r.d; z80._r.m=1; }
-    public void LDrr_he() { z80._r.h=z80._r.e; z80._r.m=1; }
-    public void LDrr_hh() { z80._r.h=z80._r.h; z80._r.m=1; }
-    public void LDrr_hl() { z80._r.h=z80._r.l; z80._r.m=1; }
-    public void LDrr_ha() { z80._r.h=z80._r.a; z80._r.m=1; }
-    public void LDrr_lb() { z80._r.l=z80._r.b; z80._r.m=1; }
-    public void LDrr_lc() { z80._r.l=z80._r.c; z80._r.m=1; }
-    public void LDrr_ld() { z80._r.l=z80._r.d; z80._r.m=1; }
-    public void LDrr_le() { z80._r.l=z80._r.e; z80._r.m=1; }
-    public void LDrr_lh() { z80._r.l=z80._r.h; z80._r.m=1; }
-    public void LDrr_ll() { z80._r.l=z80._r.l; z80._r.m=1; }
-    public void LDrr_la() { z80._r.l=z80._r.a; z80._r.m=1; }
-    public void LDrr_ab() { z80._r.a=z80._r.b; z80._r.m=1; }
-    public void LDrr_ac() { z80._r.a=z80._r.c; z80._r.m=1; }
-    public void LDrr_ad() { z80._r.a=z80._r.d; z80._r.m=1; }
-    public void LDrr_ae() { z80._r.a=z80._r.e; z80._r.m=1; }
-    public void LDrr_ah() { z80._r.a=z80._r.h; z80._r.m=1; }
-    public void LDrr_al() { z80._r.a=z80._r.l; z80._r.m=1; }
-    public void LDrr_aa() { z80._r.a=z80._r.a; z80._r.m=1; }
-
-    public void LDrHLm_b() { z80._r.b=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.m=2; }
-    public void LDrHLm_c() { z80._r.c=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.m=2; }
-    public void LDrHLm_d() { z80._r.d=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.m=2; }
-    public void LDrHLm_e() { z80._r.e=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.m=2; }
-    public void LDrHLm_h() { z80._r.h=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.m=2; }
-    public void LDrHLm_l() { z80._r.l=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.m=2; }
-    public void LDrHLm_a() { z80._r.a=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.m=2; }
-
-    public void LDHLmr_b() { mMU.wb((z80._r.h<<8)+z80._r.l,(byte)z80._r.b); z80._r.m=2; }
-    public void LDHLmr_c() { mMU.wb((z80._r.h<<8)+z80._r.l,(byte)z80._r.c); z80._r.m=2; }
-    public void LDHLmr_d() { mMU.wb((z80._r.h<<8)+z80._r.l,(byte)z80._r.d); z80._r.m=2; }
-    public void LDHLmr_e() { mMU.wb((z80._r.h<<8)+z80._r.l,(byte)z80._r.e); z80._r.m=2; }
-    public void LDHLmr_h() { mMU.wb((z80._r.h<<8)+z80._r.l,(byte)z80._r.h); z80._r.m=2; }
-    public void LDHLmr_l() { mMU.wb((z80._r.h<<8)+z80._r.l,(byte)z80._r.l); z80._r.m=2; }
-    public void LDHLmr_a() { mMU.wb((z80._r.h<<8)+z80._r.l,(byte)z80._r.a); z80._r.m=2; }
-
-    public void LDrn_b() { z80._r.b=mMU.rb(z80._r.pc); z80._r.pc++; z80._r.m=2; }
-    public void LDrn_c() { z80._r.c=mMU.rb(z80._r.pc); z80._r.pc++; z80._r.m=2; }
-    public void LDrn_d() { z80._r.d=mMU.rb(z80._r.pc); z80._r.pc++; z80._r.m=2; }
-    public void LDrn_e() { z80._r.e=mMU.rb(z80._r.pc); z80._r.pc++; z80._r.m=2; }
-    public void LDrn_h() { z80._r.h=mMU.rb(z80._r.pc); z80._r.pc++; z80._r.m=2; }
-    public void LDrn_l() { z80._r.l=mMU.rb(z80._r.pc); z80._r.pc++; z80._r.m=2; }
-    public void LDrn_a() { z80._r.a=mMU.rb(z80._r.pc); z80._r.pc++; z80._r.m=2; }
-
-    public void LDHLmn() { mMU.wb((z80._r.h<<8)+z80._r.l, (byte)mMU.rb(z80._r.pc)); z80._r.pc++; z80._r.m=3; }
-
-    public void LDBCmA() { mMU.wb((z80._r.b<<8)+z80._r.c, (byte)z80._r.a); z80._r.m=2; }
-    public void LDDEmA() { mMU.wb((z80._r.d<<8)+z80._r.e, (byte)z80._r.a); z80._r.m=2; }
-
-    public void LDmmA() { mMU.wb(mMU.rw(z80._r.pc), (byte)z80._r.a); z80._r.pc+=2; z80._r.m=4; }
-
-    public void LDmmSP() { throw new Exception("Z80: LDmmSP not implemented"); }
-
-    public void LDABCm() { z80._r.a=mMU.rb((z80._r.b<<8)+z80._r.c); z80._r.m=2; }
-    public void LDADEm() { z80._r.a=mMU.rb((z80._r.d<<8)+z80._r.e); z80._r.m=2; }
-
-    public void LDAmm() { z80._r.a=mMU.rb(mMU.rw(z80._r.pc)); z80._r.pc+=2; z80._r.m=4; }
-
-    public void LDBCnn() { z80._r.c=mMU.rb(z80._r.pc); z80._r.b=mMU.rb(z80._r.pc+1); z80._r.pc+=2; z80._r.m=3; }
-    public void LDDEnn() { z80._r.e=mMU.rb(z80._r.pc); z80._r.d=mMU.rb(z80._r.pc+1); z80._r.pc+=2; z80._r.m=3; }
-    public void LDHLnn() { z80._r.l=mMU.rb(z80._r.pc); z80._r.h=mMU.rb(z80._r.pc+1); z80._r.pc+=2; z80._r.m=3; }
-    public void LDSPnn() { z80._r.sp=mMU.rw(z80._r.pc); z80._r.pc+=2; z80._r.m=3; }
-
-    public void LDHLmm() { int i=mMU.rw(z80._r.pc); z80._r.pc+=2; z80._r.l=mMU.rb(i); z80._r.h=mMU.rb(i+1); z80._r.m=5; }
-    public void LDmmHL() { int i=mMU.rw(z80._r.pc); z80._r.pc+=2; mMU.ww(i,(z80._r.h<<8)+z80._r.l); z80._r.m=5; }
-
-    public void LDHLIA() { mMU.wb((z80._r.h<<8)+z80._r.l, (byte)z80._r.a); z80._r.l=(z80._r.l+1)&0xFF; if(!(z80._r.l>0)) z80._r.h=(z80._r.h+1)&0xFF; z80._r.m=2; }
-    public void LDAHLI() { z80._r.a=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.l=(z80._r.l+1)&0xFF; if(!(z80._r.l>0)) z80._r.h=(z80._r.h+1)&0xFF; z80._r.m=2; }
-
-    public void LDHLDA() { mMU.wb((z80._r.h<<8)+z80._r.l, (byte)z80._r.a); z80._r.l=(z80._r.l-1)&0xFF; if(z80._r.l==0xFF) z80._r.h=(z80._r.h-1)&0xFF; z80._r.m=2; }
-    public void LDAHLD() { z80._r.a=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.l=(z80._r.l-1)&0xFF; if(z80._r.l==0xFF) z80._r.h=(z80._r.h-1)&0xFF; z80._r.m=2; }
-
-    public void LDAIOn() { z80._r.a=mMU.rb(0xFF00+mMU.rb(z80._r.pc)); z80._r.pc++; z80._r.m=3; }
-    public void LDIOnA() { mMU.wb(0xFF00+mMU.rb(z80._r.pc), (byte)z80._r.a); z80._r.pc++; z80._r.m=3; }
-    public void LDAIOC() { z80._r.a=mMU.rb(0xFF00+z80._r.c); z80._r.m=2; }
-    public void LDIOCA() { mMU.wb(0xFF00+z80._r.c, (byte)z80._r.a); z80._r.m=2; }
-
-    public void LDHLSPn() { int i=mMU.rb(z80._r.pc); if(i>127) i=-((~i+1)&0xFF); z80._r.pc++; i+=z80._r.sp; z80._r.h=(i>>8)&0xFF; z80._r.l=i&0xFF; z80._r.m=3; }
-
-    public void SWAPr_b() { var tr=z80._r.b; z80._r.b=((tr&0xF)<<4)|((tr&0xF0)>>4); z80._r.f=(z80._r.b>0)?0:0x80; z80._r.m=1; }
-    public void SWAPr_c() { var tr=z80._r.c; z80._r.c=((tr&0xF)<<4)|((tr&0xF0)>>4); z80._r.f=(z80._r.c>0)?0:0x80; z80._r.m=1; }
-    public void SWAPr_d() { var tr=z80._r.d; z80._r.d=((tr&0xF)<<4)|((tr&0xF0)>>4); z80._r.f=(z80._r.d>0)?0:0x80; z80._r.m=1; }
-    public void SWAPr_e() { var tr=z80._r.e; z80._r.e=((tr&0xF)<<4)|((tr&0xF0)>>4); z80._r.f=(z80._r.e>0)?0:0x80; z80._r.m=1; }
-    public void SWAPr_h() { var tr=z80._r.h; z80._r.h=((tr&0xF)<<4)|((tr&0xF0)>>4); z80._r.f=(z80._r.h>0)?0:0x80; z80._r.m=1; }
-    public void SWAPr_l() { var tr=z80._r.l; z80._r.l=((tr&0xF)<<4)|((tr&0xF0)>>4); z80._r.f=(z80._r.l>0)?0:0x80; z80._r.m=1; }
-    public void SWAPr_a() { var tr=z80._r.a; z80._r.a=((tr&0xF)<<4)|((tr&0xF0)>>4); z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-
-    /*--- Data processing ---*/
-    public void ADDr_b() { var a=z80._r.a; z80._r.a+=z80._r.b; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.b^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADDr_c() { var a=z80._r.a; z80._r.a+=z80._r.c; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.c^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADDr_d() { var a=z80._r.a; z80._r.a+=z80._r.d; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.d^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADDr_e() { var a=z80._r.a; z80._r.a+=z80._r.e; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.e^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADDr_h() { var a=z80._r.a; z80._r.a+=z80._r.h; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.h^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADDr_l() { var a=z80._r.a; z80._r.a+=z80._r.l; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.l^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADDr_a() { var a=z80._r.a; z80._r.a+=z80._r.a; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.a^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADDHL() { var a=z80._r.a; var m=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.a+=m; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^a^m)&0x10)>0) z80._r.f|=0x20; z80._r.m=2; }
-    public void ADDn() { var a=z80._r.a; var m=mMU.rb(z80._r.pc); z80._r.a+=m; z80._r.pc++; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^a^m)&0x10)>0) z80._r.f|=0x20; z80._r.m=2; }
-    public void ADDHLBC() { var hl=(z80._r.h<<8)+z80._r.l; hl+=(z80._r.b<<8)+z80._r.c; if(hl>65535) z80._r.f|=0x10; else z80._r.f&=0xEF; z80._r.h=(hl>>8)&0xFF; z80._r.l=hl&0xFF; z80._r.m=3; }
-    public void ADDHLDE() { var hl=(z80._r.h<<8)+z80._r.l; hl+=(z80._r.d<<8)+z80._r.e; if(hl>65535) z80._r.f|=0x10; else z80._r.f&=0xEF; z80._r.h=(hl>>8)&0xFF; z80._r.l=hl&0xFF; z80._r.m=3; }
-    public void ADDHLHL() { var hl=(z80._r.h<<8)+z80._r.l; hl+=(z80._r.h<<8)+z80._r.l; if(hl>65535) z80._r.f|=0x10; else z80._r.f&=0xEF; z80._r.h=(hl>>8)&0xFF; z80._r.l=hl&0xFF; z80._r.m=3; }
-    public void ADDHLSP() { var hl=(z80._r.h<<8)+z80._r.l; hl+=z80._r.sp; if(hl>65535) z80._r.f|=0x10; else z80._r.f&=0xEF; z80._r.h=(hl>>8)&0xFF; z80._r.l=hl&0xFF; z80._r.m=3; }
-    public void ADDSPn() { int i=mMU.rb(z80._r.pc); if(i>127) i=-((~i+1)&0xFF); z80._r.pc++; z80._r.sp+=i; z80._r.m=4; }
-
-    public void ADCr_b() { var a=z80._r.a; z80._r.a+=z80._r.b; z80._r.a+=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.b^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADCr_c() { var a=z80._r.a; z80._r.a+=z80._r.c; z80._r.a+=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.c^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADCr_d() { var a=z80._r.a; z80._r.a+=z80._r.d; z80._r.a+=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.d^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADCr_e() { var a=z80._r.a; z80._r.a+=z80._r.e; z80._r.a+=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.e^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADCr_h() { var a=z80._r.a; z80._r.a+=z80._r.h; z80._r.a+=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.h^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADCr_l() { var a=z80._r.a; z80._r.a+=z80._r.l; z80._r.a+=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.l^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADCr_a() { var a=z80._r.a; z80._r.a+=z80._r.a; z80._r.a+=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.a^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void ADCHL() { var a=z80._r.a; var m=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.a+=m; z80._r.a+=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^m^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=2; }
-    public void ADCn() { var a=z80._r.a; var m=mMU.rb(z80._r.pc); z80._r.a+=m; z80._r.pc++; z80._r.a+=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a>0xFF)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^m^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=2; }
-
-    public void SUBr_b() { var a=z80._r.a; z80._r.a-=z80._r.b; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.b^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SUBr_c() { var a=z80._r.a; z80._r.a-=z80._r.c; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.c^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SUBr_d() { var a=z80._r.a; z80._r.a-=z80._r.d; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.d^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SUBr_e() { var a=z80._r.a; z80._r.a-=z80._r.e; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.e^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SUBr_h() { var a=z80._r.a; z80._r.a-=z80._r.h; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.h^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SUBr_l() { var a=z80._r.a; z80._r.a-=z80._r.l; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.l^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SUBr_a() { var a=z80._r.a; z80._r.a-=z80._r.a; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.a^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SUBHL() { var a=z80._r.a; var m=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.a-=m; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^m^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=2; }
-    public void SUBn() { var a=z80._r.a; var m=mMU.rb(z80._r.pc); z80._r.a-=m; z80._r.pc++; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^m^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=2; }
-
-    public void SBCr_b() { var a=z80._r.a; z80._r.a-=z80._r.b; z80._r.a-=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.b^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SBCr_c() { var a=z80._r.a; z80._r.a-=z80._r.c; z80._r.a-=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.c^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SBCr_d() { var a=z80._r.a; z80._r.a-=z80._r.d; z80._r.a-=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.d^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SBCr_e() { var a=z80._r.a; z80._r.a-=z80._r.e; z80._r.a-=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.e^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SBCr_h() { var a=z80._r.a; z80._r.a-=z80._r.h; z80._r.a-=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.h^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SBCr_l() { var a=z80._r.a; z80._r.a-=z80._r.l; z80._r.a-=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.l^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SBCr_a() { var a=z80._r.a; z80._r.a-=z80._r.a; z80._r.a-=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.a^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void SBCHL() { var a=z80._r.a; var m=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.a-=m; z80._r.a-=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^m^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=2; }
-    public void SBCn() { var a=z80._r.a; var m=mMU.rb(z80._r.pc); z80._r.a-=m; z80._r.pc++; z80._r.a-=((z80._r.f&0x10)>0)?1:0; z80._r.f=(z80._r.a<0)?0x50:0x40; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; if(((z80._r.a^m^a)&0x10)>0) z80._r.f|=0x20; z80._r.m=2; }
-
-    public void CPr_b() { int i=z80._r.a; i-=z80._r.b; z80._r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.b^i)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void CPr_c() { int i=z80._r.a; i-=z80._r.c; z80._r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.c^i)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void CPr_d() { int i=z80._r.a; i-=z80._r.d; z80._r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.d^i)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void CPr_e() { int i=z80._r.a; i-=z80._r.e; z80._r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.e^i)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void CPr_h() { int i=z80._r.a; i-=z80._r.h; z80._r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.h^i)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void CPr_l() { int i=z80._r.a; i-=z80._r.l; z80._r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.l^i)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void CPr_a() { int i=z80._r.a; i-=z80._r.a; z80._r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) z80._r.f|=0x80; if(((z80._r.a^z80._r.a^i)&0x10)>0) z80._r.f|=0x20; z80._r.m=1; }
-    public void CPHL() { int i=z80._r.a; var m=mMU.rb((z80._r.h<<8)+z80._r.l); i-=m; z80._r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) z80._r.f|=0x80; if(((z80._r.a^i^m)&0x10)>0) z80._r.f|=0x20; z80._r.m=2; }
-    public void CPn() { int i=z80._r.a; var m=mMU.rb(z80._r.pc); i-=m; z80._r.pc++; z80._r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) z80._r.f|=0x80; if(((z80._r.a^i^m)&0x10)>0) z80._r.f|=0x20; z80._r.m=2; }
-
-    public void DAA() { var a=z80._r.a; if((z80._r.f&0x20)>0||((z80._r.a&15)>9)) z80._r.a+=6; z80._r.f&=0xEF; if(((z80._r.f&0x20) > 0)||(a>0x99)) { z80._r.a+=0x60; z80._r.f|=0x10; } z80._r.m=1; }
-
-    public void ANDr_b() { z80._r.a&=z80._r.b; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ANDr_c() { z80._r.a&=z80._r.c; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ANDr_d() { z80._r.a&=z80._r.d; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ANDr_e() { z80._r.a&=z80._r.e; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ANDr_h() { z80._r.a&=z80._r.h; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ANDr_l() { z80._r.a&=z80._r.l; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ANDr_a() { z80._r.a&=z80._r.a; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ANDHL() { z80._r.a&=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=2; }
-    public void ANDn() { z80._r.a&=mMU.rb(z80._r.pc); z80._r.pc++; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=2; }
-
-    public void ORr_b() { z80._r.a|=z80._r.b; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ORr_c() { z80._r.a|=z80._r.c; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ORr_d() { z80._r.a|=z80._r.d; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ORr_e() { z80._r.a|=z80._r.e; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ORr_h() { z80._r.a|=z80._r.h; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ORr_l() { z80._r.a|=z80._r.l; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ORr_a() { z80._r.a|=z80._r.a; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void ORHL() { z80._r.a|=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=2; }
-    public void ORn() { z80._r.a|=mMU.rb(z80._r.pc); z80._r.pc++; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=2; }
-
-    public void XORr_b() { z80._r.a^=z80._r.b; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void XORr_c() { z80._r.a^=z80._r.c; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void XORr_d() { z80._r.a^=z80._r.d; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void XORr_e() { z80._r.a^=z80._r.e; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void XORr_h() { z80._r.a^=z80._r.h; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void XORr_l() { z80._r.a^=z80._r.l; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void XORr_a() { z80._r.a^=z80._r.a; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void XORHL() { z80._r.a^=mMU.rb((z80._r.h<<8)+z80._r.l); z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=2; }
-    public void XORn() { z80._r.a^=mMU.rb(z80._r.pc); z80._r.pc++; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=2; }
-
-    public void INCr_b() { z80._r.b++; z80._r.b&=0xFF; z80._r.f=(z80._r.b>0)?0:0x80; z80._r.m=1; }
-    public void INCr_c() { z80._r.c++; z80._r.c&=0xFF; z80._r.f=(z80._r.c>0)?0:0x80; z80._r.m=1; }
-    public void INCr_d() { z80._r.d++; z80._r.d&=0xFF; z80._r.f=(z80._r.d>0)?0:0x80; z80._r.m=1; }
-    public void INCr_e() { z80._r.e++; z80._r.e&=0xFF; z80._r.f=(z80._r.e>0)?0:0x80; z80._r.m=1; }
-    public void INCr_h() { z80._r.h++; z80._r.h&=0xFF; z80._r.f=(z80._r.h>0)?0:0x80; z80._r.m=1; }
-    public void INCr_l() { z80._r.l++; z80._r.l&=0xFF; z80._r.f=(z80._r.l>0)?0:0x80; z80._r.m=1; }
-    public void INCr_a() { z80._r.a++; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void INCHLm() { int i=mMU.rb((z80._r.h<<8)+z80._r.l)+1; i&=0xFF; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.f=(i>0)?0:0x80; z80._r.m=3; }
-
-    public void DECr_b() { z80._r.b--; z80._r.b&=0xFF; z80._r.f=(z80._r.b>0)?0:0x80; z80._r.m=1; }
-    public void DECr_c() { z80._r.c--; z80._r.c&=0xFF; z80._r.f=(z80._r.c>0)?0:0x80; z80._r.m=1; }
-    public void DECr_d() { z80._r.d--; z80._r.d&=0xFF; z80._r.f=(z80._r.d>0)?0:0x80; z80._r.m=1; }
-    public void DECr_e() { z80._r.e--; z80._r.e&=0xFF; z80._r.f=(z80._r.e>0)?0:0x80; z80._r.m=1; }
-    public void DECr_h() { z80._r.h--; z80._r.h&=0xFF; z80._r.f=(z80._r.h>0)?0:0x80; z80._r.m=1; }
-    public void DECr_l() { z80._r.l--; z80._r.l&=0xFF; z80._r.f=(z80._r.l>0)?0:0x80; z80._r.m=1; }
-    public void DECr_a() { z80._r.a--; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void DECHLm() { int i=mMU.rb((z80._r.h<<8)+z80._r.l)-1; i&=0xFF; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.f=(i>0)?0:0x80; z80._r.m=3; }
-
-    public void INCBC() { z80._r.c=(z80._r.c+1)&0xFF; if(!(z80._r.c>0)) z80._r.b=(z80._r.b+1)&0xFF; z80._r.m=1; }
-    public void INCDE() { z80._r.e=(z80._r.e+1)&0xFF; if(!(z80._r.e>0)) z80._r.d=(z80._r.d+1)&0xFF; z80._r.m=1; }
-    public void INCHL() { z80._r.l=(z80._r.l+1)&0xFF; if(!(z80._r.l>0)) z80._r.h=(z80._r.h+1)&0xFF; z80._r.m=1; }
-    public void INCSP() { z80._r.sp=(z80._r.sp+1)&65535; z80._r.m=1; }
-
-    public void DECBC() { z80._r.c=(z80._r.c-1)&0xFF; if(z80._r.c==0xFF) z80._r.b=(z80._r.b-1)&0xFF; z80._r.m=1; }
-    public void DECDE() { z80._r.e=(z80._r.e-1)&0xFF; if(z80._r.e==0xFF) z80._r.d=(z80._r.d-1)&0xFF; z80._r.m=1; }
-    public void DECHL() { z80._r.l=(z80._r.l-1)&0xFF; if(z80._r.l==0xFF) z80._r.h=(z80._r.h-1)&0xFF; z80._r.m=1; }
-    public void DECSP() { z80._r.sp=(z80._r.sp-1)&65535; z80._r.m=1; }
-
-    /*--- Bit manipulation ---*/
-    public void BIT0b() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.b&0x01)>0)?0:0x80; z80._r.m=2; }
-    public void BIT0c() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.c&0x01)>0)?0:0x80; z80._r.m=2; }
-    public void BIT0d() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.d&0x01)>0)?0:0x80; z80._r.m=2; }
-    public void BIT0e() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.e&0x01)>0)?0:0x80; z80._r.m=2; }
-    public void BIT0h() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.h&0x01)>0)?0:0x80; z80._r.m=2; }
-    public void BIT0l() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.l&0x01)>0)?0:0x80; z80._r.m=2; }
-    public void BIT0a() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.a&0x01)>0)?0:0x80; z80._r.m=2; }
-    public void BIT0m() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((mMU.rb((z80._r.h<<8)+z80._r.l)&0x01)>0)?0:0x80; z80._r.m=3; }
-
-    public void RES0b() { z80._r.b&=0xFE; z80._r.m=2; }
-    public void RES0c() { z80._r.c&=0xFE; z80._r.m=2; }
-    public void RES0d() { z80._r.d&=0xFE; z80._r.m=2; }
-    public void RES0e() { z80._r.e&=0xFE; z80._r.m=2; }
-    public void RES0h() { z80._r.h&=0xFE; z80._r.m=2; }
-    public void RES0l() { z80._r.l&=0xFE; z80._r.m=2; }
-    public void RES0a() { z80._r.a&=0xFE; z80._r.m=2; }
-    public void RES0m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i&=0xFE; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void SET0b() { z80._r.b|=0x01; z80._r.m=2; }
-    public void SET0c() { z80._r.b|=0x01; z80._r.m=2; }
-    public void SET0d() { z80._r.b|=0x01; z80._r.m=2; }
-    public void SET0e() { z80._r.b|=0x01; z80._r.m=2; }
-    public void SET0h() { z80._r.b|=0x01; z80._r.m=2; }
-    public void SET0l() { z80._r.b|=0x01; z80._r.m=2; }
-    public void SET0a() { z80._r.b|=0x01; z80._r.m=2; }
-    public void SET0m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i|=0x01; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void BIT1b() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.b&0x02)>0)?0:0x80; z80._r.m=2; }
-    public void BIT1c() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.c&0x02)>0)?0:0x80; z80._r.m=2; }
-    public void BIT1d() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.d&0x02)>0)?0:0x80; z80._r.m=2; }
-    public void BIT1e() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.e&0x02)>0)?0:0x80; z80._r.m=2; }
-    public void BIT1h() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.h&0x02)>0)?0:0x80; z80._r.m=2; }
-    public void BIT1l() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.l&0x02)>0)?0:0x80; z80._r.m=2; }
-    public void BIT1a() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.a&0x02)>0)?0:0x80; z80._r.m=2; }
-    public void BIT1m() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((mMU.rb((z80._r.h<<8)+z80._r.l)&0x02)>0)?0:0x80; z80._r.m=3; }
-
-    public void RES1b() { z80._r.b&=0xFD; z80._r.m=2; }
-    public void RES1c() { z80._r.c&=0xFD; z80._r.m=2; }
-    public void RES1d() { z80._r.d&=0xFD; z80._r.m=2; }
-    public void RES1e() { z80._r.e&=0xFD; z80._r.m=2; }
-    public void RES1h() { z80._r.h&=0xFD; z80._r.m=2; }
-    public void RES1l() { z80._r.l&=0xFD; z80._r.m=2; }
-    public void RES1a() { z80._r.a&=0xFD; z80._r.m=2; }
-    public void RES1m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i&=0xFD; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void SET1b() { z80._r.b|=0x02; z80._r.m=2; }
-    public void SET1c() { z80._r.b|=0x02; z80._r.m=2; }
-    public void SET1d() { z80._r.b|=0x02; z80._r.m=2; }
-    public void SET1e() { z80._r.b|=0x02; z80._r.m=2; }
-    public void SET1h() { z80._r.b|=0x02; z80._r.m=2; }
-    public void SET1l() { z80._r.b|=0x02; z80._r.m=2; }
-    public void SET1a() { z80._r.b|=0x02; z80._r.m=2; }
-    public void SET1m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i|=0x02; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void BIT2b() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.b&0x04)>0)?0:0x80; z80._r.m=2; }
-    public void BIT2c() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.c&0x04)>0)?0:0x80; z80._r.m=2; }
-    public void BIT2d() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.d&0x04)>0)?0:0x80; z80._r.m=2; }
-    public void BIT2e() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.e&0x04)>0)?0:0x80; z80._r.m=2; }
-    public void BIT2h() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.h&0x04)>0)?0:0x80; z80._r.m=2; }
-    public void BIT2l() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.l&0x04)>0)?0:0x80; z80._r.m=2; }
-    public void BIT2a() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.a&0x04)>0)?0:0x80; z80._r.m=2; }
-    public void BIT2m() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((mMU.rb((z80._r.h<<8)+z80._r.l)&0x04)>0)?0:0x80; z80._r.m=3; }
-
-    public void RES2b() { z80._r.b&=0xFB; z80._r.m=2; }
-    public void RES2c() { z80._r.c&=0xFB; z80._r.m=2; }
-    public void RES2d() { z80._r.d&=0xFB; z80._r.m=2; }
-    public void RES2e() { z80._r.e&=0xFB; z80._r.m=2; }
-    public void RES2h() { z80._r.h&=0xFB; z80._r.m=2; }
-    public void RES2l() { z80._r.l&=0xFB; z80._r.m=2; }
-    public void RES2a() { z80._r.a&=0xFB; z80._r.m=2; }
-    public void RES2m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i&=0xFB; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void SET2b() { z80._r.b|=0x04; z80._r.m=2; }
-    public void SET2c() { z80._r.b|=0x04; z80._r.m=2; }
-    public void SET2d() { z80._r.b|=0x04; z80._r.m=2; }
-    public void SET2e() { z80._r.b|=0x04; z80._r.m=2; }
-    public void SET2h() { z80._r.b|=0x04; z80._r.m=2; }
-    public void SET2l() { z80._r.b|=0x04; z80._r.m=2; }
-    public void SET2a() { z80._r.b|=0x04; z80._r.m=2; }
-    public void SET2m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i|=0x04; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void BIT3b() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.b&0x08)>0)?0:0x80; z80._r.m=2; }
-    public void BIT3c() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.c&0x08)>0)?0:0x80; z80._r.m=2; }
-    public void BIT3d() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.d&0x08)>0)?0:0x80; z80._r.m=2; }
-    public void BIT3e() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.e&0x08)>0)?0:0x80; z80._r.m=2; }
-    public void BIT3h() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.h&0x08)>0)?0:0x80; z80._r.m=2; }
-    public void BIT3l() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.l&0x08)>0)?0:0x80; z80._r.m=2; }
-    public void BIT3a() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.a&0x08)>0)?0:0x80; z80._r.m=2; }
-    public void BIT3m() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((mMU.rb((z80._r.h<<8)+z80._r.l)&0x08)>0)?0:0x80; z80._r.m=3; }
-
-    public void RES3b() { z80._r.b&=0xF7; z80._r.m=2; }
-    public void RES3c() { z80._r.c&=0xF7; z80._r.m=2; }
-    public void RES3d() { z80._r.d&=0xF7; z80._r.m=2; }
-    public void RES3e() { z80._r.e&=0xF7; z80._r.m=2; }
-    public void RES3h() { z80._r.h&=0xF7; z80._r.m=2; }
-    public void RES3l() { z80._r.l&=0xF7; z80._r.m=2; }
-    public void RES3a() { z80._r.a&=0xF7; z80._r.m=2; }
-    public void RES3m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i&=0xF7; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void SET3b() { z80._r.b|=0x08; z80._r.m=2; }
-    public void SET3c() { z80._r.b|=0x08; z80._r.m=2; }
-    public void SET3d() { z80._r.b|=0x08; z80._r.m=2; }
-    public void SET3e() { z80._r.b|=0x08; z80._r.m=2; }
-    public void SET3h() { z80._r.b|=0x08; z80._r.m=2; }
-    public void SET3l() { z80._r.b|=0x08; z80._r.m=2; }
-    public void SET3a() { z80._r.b|=0x08; z80._r.m=2; }
-    public void SET3m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i|=0x08; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void BIT4b() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.b&0x10)>0)?0:0x80; z80._r.m=2; }
-    public void BIT4c() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.c&0x10)>0)?0:0x80; z80._r.m=2; }
-    public void BIT4d() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.d&0x10)>0)?0:0x80; z80._r.m=2; }
-    public void BIT4e() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.e&0x10)>0)?0:0x80; z80._r.m=2; }
-    public void BIT4h() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.h&0x10)>0)?0:0x80; z80._r.m=2; }
-    public void BIT4l() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.l&0x10)>0)?0:0x80; z80._r.m=2; }
-    public void BIT4a() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.a&0x10)>0)?0:0x80; z80._r.m=2; }
-    public void BIT4m() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((mMU.rb((z80._r.h<<8)+z80._r.l)&0x10)>0)?0:0x80; z80._r.m=3; }
-
-    public void RES4b() { z80._r.b&=0xEF; z80._r.m=2; }
-    public void RES4c() { z80._r.c&=0xEF; z80._r.m=2; }
-    public void RES4d() { z80._r.d&=0xEF; z80._r.m=2; }
-    public void RES4e() { z80._r.e&=0xEF; z80._r.m=2; }
-    public void RES4h() { z80._r.h&=0xEF; z80._r.m=2; }
-    public void RES4l() { z80._r.l&=0xEF; z80._r.m=2; }
-    public void RES4a() { z80._r.a&=0xEF; z80._r.m=2; }
-    public void RES4m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i&=0xEF; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void SET4b() { z80._r.b|=0x10; z80._r.m=2; }
-    public void SET4c() { z80._r.b|=0x10; z80._r.m=2; }
-    public void SET4d() { z80._r.b|=0x10; z80._r.m=2; }
-    public void SET4e() { z80._r.b|=0x10; z80._r.m=2; }
-    public void SET4h() { z80._r.b|=0x10; z80._r.m=2; }
-    public void SET4l() { z80._r.b|=0x10; z80._r.m=2; }
-    public void SET4a() { z80._r.b|=0x10; z80._r.m=2; }
-    public void SET4m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i|=0x10; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void BIT5b() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.b&0x20)>0)?0:0x80; z80._r.m=2; }
-    public void BIT5c() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.c&0x20)>0)?0:0x80; z80._r.m=2; }
-    public void BIT5d() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.d&0x20)>0)?0:0x80; z80._r.m=2; }
-    public void BIT5e() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.e&0x20)>0)?0:0x80; z80._r.m=2; }
-    public void BIT5h() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.h&0x20)>0)?0:0x80; z80._r.m=2; }
-    public void BIT5l() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.l&0x20)>0)?0:0x80; z80._r.m=2; }
-    public void BIT5a() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.a&0x20)>0)?0:0x80; z80._r.m=2; }
-    public void BIT5m() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((mMU.rb((z80._r.h<<8)+z80._r.l)&0x20)>0)?0:0x80; z80._r.m=3; }
-
-    public void RES5b() { z80._r.b&=0xDF; z80._r.m=2; }
-    public void RES5c() { z80._r.c&=0xDF; z80._r.m=2; }
-    public void RES5d() { z80._r.d&=0xDF; z80._r.m=2; }
-    public void RES5e() { z80._r.e&=0xDF; z80._r.m=2; }
-    public void RES5h() { z80._r.h&=0xDF; z80._r.m=2; }
-    public void RES5l() { z80._r.l&=0xDF; z80._r.m=2; }
-    public void RES5a() { z80._r.a&=0xDF; z80._r.m=2; }
-    public void RES5m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i&=0xDF; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void SET5b() { z80._r.b|=0x20; z80._r.m=2; }
-    public void SET5c() { z80._r.b|=0x20; z80._r.m=2; }
-    public void SET5d() { z80._r.b|=0x20; z80._r.m=2; }
-    public void SET5e() { z80._r.b|=0x20; z80._r.m=2; }
-    public void SET5h() { z80._r.b|=0x20; z80._r.m=2; }
-    public void SET5l() { z80._r.b|=0x20; z80._r.m=2; }
-    public void SET5a() { z80._r.b|=0x20; z80._r.m=2; }
-    public void SET5m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i|=0x20; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void BIT6b() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.b&0x40)>0)?0:0x80; z80._r.m=2; }
-    public void BIT6c() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.c&0x40)>0)?0:0x80; z80._r.m=2; }
-    public void BIT6d() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.d&0x40)>0)?0:0x80; z80._r.m=2; }
-    public void BIT6e() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.e&0x40)>0)?0:0x80; z80._r.m=2; }
-    public void BIT6h() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.h&0x40)>0)?0:0x80; z80._r.m=2; }
-    public void BIT6l() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.l&0x40)>0)?0:0x80; z80._r.m=2; }
-    public void BIT6a() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.a&0x40)>0)?0:0x80; z80._r.m=2; }
-    public void BIT6m() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((mMU.rb((z80._r.h<<8)+z80._r.l)&0x40)>0)?0:0x80; z80._r.m=3; }
-
-    public void RES6b() { z80._r.b&=0xBF; z80._r.m=2; }
-    public void RES6c() { z80._r.c&=0xBF; z80._r.m=2; }
-    public void RES6d() { z80._r.d&=0xBF; z80._r.m=2; }
-    public void RES6e() { z80._r.e&=0xBF; z80._r.m=2; }
-    public void RES6h() { z80._r.h&=0xBF; z80._r.m=2; }
-    public void RES6l() { z80._r.l&=0xBF; z80._r.m=2; }
-    public void RES6a() { z80._r.a&=0xBF; z80._r.m=2; }
-    public void RES6m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i&=0xBF; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void SET6b() { z80._r.b|=0x40; z80._r.m=2; }
-    public void SET6c() { z80._r.b|=0x40; z80._r.m=2; }
-    public void SET6d() { z80._r.b|=0x40; z80._r.m=2; }
-    public void SET6e() { z80._r.b|=0x40; z80._r.m=2; }
-    public void SET6h() { z80._r.b|=0x40; z80._r.m=2; }
-    public void SET6l() { z80._r.b|=0x40; z80._r.m=2; }
-    public void SET6a() { z80._r.b|=0x40; z80._r.m=2; }
-    public void SET6m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i|=0x40; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void BIT7b() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.b&0x80)>0)?0:0x80; z80._r.m=2; }
-    public void BIT7c() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.c&0x80)>0)?0:0x80; z80._r.m=2; }
-    public void BIT7d() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.d&0x80)>0)?0:0x80; z80._r.m=2; }
-    public void BIT7e() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.e&0x80)>0)?0:0x80; z80._r.m=2; }
-    public void BIT7h() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.h&0x80)>0)?0:0x80; z80._r.m=2; }
-    public void BIT7l() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.l&0x80)>0)?0:0x80; z80._r.m=2; }
-    public void BIT7a() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((z80._r.a&0x80)>0)?0:0x80; z80._r.m=2; }
-    public void BIT7m() { z80._r.f&=0x1F; z80._r.f|=0x20; z80._r.f=((mMU.rb((z80._r.h<<8)+z80._r.l)&0x80)>0)?0:0x80; z80._r.m=3; }
-
-    public void RES7b() { z80._r.b&=0x7F; z80._r.m=2; }
-    public void RES7c() { z80._r.c&=0x7F; z80._r.m=2; }
-    public void RES7d() { z80._r.d&=0x7F; z80._r.m=2; }
-    public void RES7e() { z80._r.e&=0x7F; z80._r.m=2; }
-    public void RES7h() { z80._r.h&=0x7F; z80._r.m=2; }
-    public void RES7l() { z80._r.l&=0x7F; z80._r.m=2; }
-    public void RES7a() { z80._r.a&=0x7F; z80._r.m=2; }
-    public void RES7m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i&=0x7F; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void SET7b() { z80._r.b|=0x80; z80._r.m=2; }
-    public void SET7c() { z80._r.b|=0x80; z80._r.m=2; }
-    public void SET7d() { z80._r.b|=0x80; z80._r.m=2; }
-    public void SET7e() { z80._r.b|=0x80; z80._r.m=2; }
-    public void SET7h() { z80._r.b|=0x80; z80._r.m=2; }
-    public void SET7l() { z80._r.b|=0x80; z80._r.m=2; }
-    public void SET7a() { z80._r.b|=0x80; z80._r.m=2; }
-    public void SET7m() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); i|=0x80; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.m=4; }
-
-    public void RLA() { var ci=((z80._r.f&0x10)>0)?1:0; var co=((z80._r.a&0x80)>0)?0x10:0; z80._r.a=(z80._r.a<<1)+ci; z80._r.a&=0xFF; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=1; }
-    public void RLCA() { var ci=((z80._r.a&0x80)>0)?1:0; var co=((z80._r.a&0x80)>0)?0x10:0; z80._r.a=(z80._r.a<<1)+ci; z80._r.a&=0xFF; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=1; }
-    public void RRA() { var ci=((z80._r.f&0x10)>0)?0x80:0; var co=((z80._r.a&1)>0)?0x10:0; z80._r.a=(z80._r.a>>1)+ci; z80._r.a&=0xFF; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=1; }
-    public void RRCA() { var ci=((z80._r.a&1)>0)?0x80:0; var co=((z80._r.a&1)>0)?0x10:0; z80._r.a=(z80._r.a>>1)+ci; z80._r.a&=0xFF; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=1; }
-
-    public void RLr_b() { var ci=((z80._r.f&0x10)>0)?1:0; var co=((z80._r.b&0x80)>0)?0x10:0; z80._r.b=(z80._r.b<<1)+ci; z80._r.b&=0xFF; z80._r.f=(z80._r.b>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLr_c() { var ci=((z80._r.f&0x10)>0)?1:0; var co=((z80._r.c&0x80)>0)?0x10:0; z80._r.c=(z80._r.c<<1)+ci; z80._r.c&=0xFF; z80._r.f=(z80._r.c>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLr_d() { var ci=((z80._r.f&0x10)>0)?1:0; var co=((z80._r.d&0x80)>0)?0x10:0; z80._r.d=(z80._r.d<<1)+ci; z80._r.d&=0xFF; z80._r.f=(z80._r.d>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLr_e() { var ci=((z80._r.f&0x10)>0)?1:0; var co=((z80._r.e&0x80)>0)?0x10:0; z80._r.e=(z80._r.e<<1)+ci; z80._r.e&=0xFF; z80._r.f=(z80._r.e>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLr_h() { var ci=((z80._r.f&0x10)>0)?1:0; var co=((z80._r.h&0x80)>0)?0x10:0; z80._r.h=(z80._r.h<<1)+ci; z80._r.h&=0xFF; z80._r.f=(z80._r.h>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLr_l() { var ci=((z80._r.f&0x10)>0)?1:0; var co=((z80._r.l&0x80)>0)?0x10:0; z80._r.l=(z80._r.l<<1)+ci; z80._r.l&=0xFF; z80._r.f=(z80._r.l>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLr_a() { var ci=((z80._r.f&0x10)>0)?1:0; var co=((z80._r.a&0x80)>0)?0x10:0; z80._r.a=(z80._r.a<<1)+ci; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLHL() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); var ci=((z80._r.f&0x10)>0)?1:0; var co=((i&0x80)>0)?0x10:0; i=(i<<1)+ci; i&=0xFF; z80._r.f=(i>0)?0:0x80; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=4; }
-
-    public void RLCr_b() { var ci=((z80._r.b&0x80)>0)?1:0; var co=((z80._r.b&0x80)>0)?0x10:0; z80._r.b=(z80._r.b<<1)+ci; z80._r.b&=0xFF; z80._r.f=(z80._r.b>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLCr_c() { var ci=((z80._r.c&0x80)>0)?1:0; var co=((z80._r.c&0x80)>0)?0x10:0; z80._r.c=(z80._r.c<<1)+ci; z80._r.c&=0xFF; z80._r.f=(z80._r.c>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLCr_d() { var ci=((z80._r.d&0x80)>0)?1:0; var co=((z80._r.d&0x80)>0)?0x10:0; z80._r.d=(z80._r.d<<1)+ci; z80._r.d&=0xFF; z80._r.f=(z80._r.d>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLCr_e() { var ci=((z80._r.e&0x80)>0)?1:0; var co=((z80._r.e&0x80)>0)?0x10:0; z80._r.e=(z80._r.e<<1)+ci; z80._r.e&=0xFF; z80._r.f=(z80._r.e>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLCr_h() { var ci=((z80._r.h&0x80)>0)?1:0; var co=((z80._r.h&0x80)>0)?0x10:0; z80._r.h=(z80._r.h<<1)+ci; z80._r.h&=0xFF; z80._r.f=(z80._r.h>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLCr_l() { var ci=((z80._r.l&0x80)>0)?1:0; var co=((z80._r.l&0x80)>0)?0x10:0; z80._r.l=(z80._r.l<<1)+ci; z80._r.l&=0xFF; z80._r.f=(z80._r.l>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLCr_a() { var ci=((z80._r.a&0x80)>0)?1:0; var co=((z80._r.a&0x80)>0)?0x10:0; z80._r.a=(z80._r.a<<1)+ci; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RLCHL() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); var ci=((i&0x80)>0)?1:0; var co=((i&0x80)>0)?0x10:0; i=(i<<1)+ci; i&=0xFF; z80._r.f=(i>0)?0:0x80; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=4; }
-
-    public void RRr_b() { var ci=((z80._r.f&0x10)>0)?0x80:0; var co=((z80._r.b&1)>0)?0x10:0; z80._r.b=(z80._r.b>>1)+ci; z80._r.b&=0xFF; z80._r.f=(z80._r.b>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRr_c() { var ci=((z80._r.f&0x10)>0)?0x80:0; var co=((z80._r.c&1)>0)?0x10:0; z80._r.c=(z80._r.c>>1)+ci; z80._r.c&=0xFF; z80._r.f=(z80._r.c>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRr_d() { var ci=((z80._r.f&0x10)>0)?0x80:0; var co=((z80._r.d&1)>0)?0x10:0; z80._r.d=(z80._r.d>>1)+ci; z80._r.d&=0xFF; z80._r.f=(z80._r.d>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRr_e() { var ci=((z80._r.f&0x10)>0)?0x80:0; var co=((z80._r.e&1)>0)?0x10:0; z80._r.e=(z80._r.e>>1)+ci; z80._r.e&=0xFF; z80._r.f=(z80._r.e>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRr_h() { var ci=((z80._r.f&0x10)>0)?0x80:0; var co=((z80._r.h&1)>0)?0x10:0; z80._r.h=(z80._r.h>>1)+ci; z80._r.h&=0xFF; z80._r.f=(z80._r.h>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRr_l() { var ci=((z80._r.f&0x10)>0)?0x80:0; var co=((z80._r.l&1)>0)?0x10:0; z80._r.l=(z80._r.l>>1)+ci; z80._r.l&=0xFF; z80._r.f=(z80._r.l>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRr_a() { var ci=((z80._r.f&0x10)>0)?0x80:0; var co=((z80._r.a&1)>0)?0x10:0; z80._r.a=(z80._r.a>>1)+ci; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRHL() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); var ci=((z80._r.f&0x10)>0)?0x80:0; var co=((i&1)>0)?0x10:0; i=(i>>1)+ci; i&=0xFF; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.f=(i>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=4; }
-
-    public void RRCr_b() { var ci=((z80._r.b&1)>0)?0x80:0; var co=((z80._r.b&1)>0)?0x10:0; z80._r.b=(z80._r.b>>1)+ci; z80._r.b&=0xFF; z80._r.f=(z80._r.b>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRCr_c() { var ci=((z80._r.c&1)>0)?0x80:0; var co=((z80._r.c&1)>0)?0x10:0; z80._r.c=(z80._r.c>>1)+ci; z80._r.c&=0xFF; z80._r.f=(z80._r.c>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRCr_d() { var ci=((z80._r.d&1)>0)?0x80:0; var co=((z80._r.d&1)>0)?0x10:0; z80._r.d=(z80._r.d>>1)+ci; z80._r.d&=0xFF; z80._r.f=(z80._r.d>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRCr_e() { var ci=((z80._r.e&1)>0)?0x80:0; var co=((z80._r.e&1)>0)?0x10:0; z80._r.e=(z80._r.e>>1)+ci; z80._r.e&=0xFF; z80._r.f=(z80._r.e>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRCr_h() { var ci=((z80._r.h&1)>0)?0x80:0; var co=((z80._r.h&1)>0)?0x10:0; z80._r.h=(z80._r.h>>1)+ci; z80._r.h&=0xFF; z80._r.f=(z80._r.h>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRCr_l() { var ci=((z80._r.l&1)>0)?0x80:0; var co=((z80._r.l&1)>0)?0x10:0; z80._r.l=(z80._r.l>>1)+ci; z80._r.l&=0xFF; z80._r.f=(z80._r.l>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRCr_a() { var ci=((z80._r.a&1)>0)?0x80:0; var co=((z80._r.a&1)>0)?0x10:0; z80._r.a=(z80._r.a>>1)+ci; z80._r.a&=0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void RRCHL() { int i=mMU.rb((z80._r.h<<8)+z80._r.l); var ci=((i&1)>0)?0x80:0; var co=((i&1)>0)?0x10:0; i=(i>>1)+ci; i&=0xFF; mMU.wb((z80._r.h<<8)+z80._r.l,(byte)i); z80._r.f=(i>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=4; }
-
-    public void SLAr_b() { var co=((z80._r.b&0x80)>0)?0x10:0; z80._r.b=(z80._r.b<<1)&0xFF; z80._r.f=(z80._r.b>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SLAr_c() { var co=((z80._r.c&0x80)>0)?0x10:0; z80._r.c=(z80._r.c<<1)&0xFF; z80._r.f=(z80._r.c>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SLAr_d() { var co=((z80._r.d&0x80)>0)?0x10:0; z80._r.d=(z80._r.d<<1)&0xFF; z80._r.f=(z80._r.d>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SLAr_e() { var co=((z80._r.e&0x80)>0)?0x10:0; z80._r.e=(z80._r.e<<1)&0xFF; z80._r.f=(z80._r.e>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SLAr_h() { var co=((z80._r.h&0x80)>0)?0x10:0; z80._r.h=(z80._r.h<<1)&0xFF; z80._r.f=(z80._r.h>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SLAr_l() { var co=((z80._r.l&0x80)>0)?0x10:0; z80._r.l=(z80._r.l<<1)&0xFF; z80._r.f=(z80._r.l>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SLAr_a() { var co=((z80._r.a&0x80)>0)?0x10:0; z80._r.a=(z80._r.a<<1)&0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-
-    public void SLLr_b() { var co=((z80._r.b&0x80)>0)?0x10:0; z80._r.b=(z80._r.b<<1)&0xFF+1; z80._r.f=(z80._r.b>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SLLr_c() { var co=((z80._r.c&0x80)>0)?0x10:0; z80._r.c=(z80._r.c<<1)&0xFF+1; z80._r.f=(z80._r.c>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SLLr_d() { var co=((z80._r.d&0x80)>0)?0x10:0; z80._r.d=(z80._r.d<<1)&0xFF+1; z80._r.f=(z80._r.d>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SLLr_e() { var co=((z80._r.e&0x80)>0)?0x10:0; z80._r.e=(z80._r.e<<1)&0xFF+1; z80._r.f=(z80._r.e>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SLLr_h() { var co=((z80._r.h&0x80)>0)?0x10:0; z80._r.h=(z80._r.h<<1)&0xFF+1; z80._r.f=(z80._r.h>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SLLr_l() { var co=((z80._r.l&0x80)>0)?0x10:0; z80._r.l=(z80._r.l<<1)&0xFF+1; z80._r.f=(z80._r.l>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SLLr_a() { var co=((z80._r.a&0x80)>0)?0x10:0; z80._r.a=(z80._r.a<<1)&0xFF+1; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-
-    public void SRAr_b() { var ci=z80._r.b&0x80; var co=((z80._r.b&1)>0)?0x10:0; z80._r.b=((z80._r.b>>1)+ci)&0xFF; z80._r.f=(z80._r.b>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SRAr_c() { var ci=z80._r.c&0x80; var co=((z80._r.c&1)>0)?0x10:0; z80._r.c=((z80._r.c>>1)+ci)&0xFF; z80._r.f=(z80._r.c>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SRAr_d() { var ci=z80._r.d&0x80; var co=((z80._r.d&1)>0)?0x10:0; z80._r.d=((z80._r.d>>1)+ci)&0xFF; z80._r.f=(z80._r.d>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SRAr_e() { var ci=z80._r.e&0x80; var co=((z80._r.e&1)>0)?0x10:0; z80._r.e=((z80._r.e>>1)+ci)&0xFF; z80._r.f=(z80._r.e>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SRAr_h() { var ci=z80._r.h&0x80; var co=((z80._r.h&1)>0)?0x10:0; z80._r.h=((z80._r.h>>1)+ci)&0xFF; z80._r.f=(z80._r.h>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SRAr_l() { var ci=z80._r.l&0x80; var co=((z80._r.l&1)>0)?0x10:0; z80._r.l=((z80._r.l>>1)+ci)&0xFF; z80._r.f=(z80._r.l>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SRAr_a() { var ci=z80._r.a&0x80; var co=((z80._r.a&1)>0)?0x10:0; z80._r.a=((z80._r.a>>1)+ci)&0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-
-    public void SRLr_b() { var co=((z80._r.b&1)>0)?0x10:0; z80._r.b=(z80._r.b>>1)&0xFF; z80._r.f=(z80._r.b>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SRLr_c() { var co=((z80._r.c&1)>0)?0x10:0; z80._r.c=(z80._r.c>>1)&0xFF; z80._r.f=(z80._r.c>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SRLr_d() { var co=((z80._r.d&1)>0)?0x10:0; z80._r.d=(z80._r.d>>1)&0xFF; z80._r.f=(z80._r.d>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SRLr_e() { var co=((z80._r.e&1)>0)?0x10:0; z80._r.e=(z80._r.e>>1)&0xFF; z80._r.f=(z80._r.e>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SRLr_h() { var co=((z80._r.h&1)>0)?0x10:0; z80._r.h=(z80._r.h>>1)&0xFF; z80._r.f=(z80._r.h>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SRLr_l() { var co=((z80._r.l&1)>0)?0x10:0; z80._r.l=(z80._r.l>>1)&0xFF; z80._r.f=(z80._r.l>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-    public void SRLr_a() { var co=((z80._r.a&1)>0)?0x10:0; z80._r.a=(z80._r.a>>1)&0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.f=(z80._r.f&0xEF)+co; z80._r.m=2; }
-
-    public void CPL() { z80._r.a ^= 0xFF; z80._r.f=(z80._r.a>0)?0:0x80; z80._r.m=1; }
-    public void NEG() { z80._r.a=0-z80._r.a; z80._r.f=(z80._r.a<0)?0x10:0; z80._r.a&=0xFF; if(!(z80._r.a>0)) z80._r.f|=0x80; z80._r.m=2; }
-
-    public void CCF() { var ci=((z80._r.f&0x10)>0)?0:0x10; z80._r.f=(z80._r.f&0xEF)+ci; z80._r.m=1; }
-    public void SCF() { z80._r.f|=0x10; z80._r.m=1; }
-
-    /*--- Stack ---*/
-    public void PUSHBC() { z80._r.sp--; mMU.wb(z80._r.sp,(byte)z80._r.b); z80._r.sp--; mMU.wb(z80._r.sp,(byte)z80._r.c); z80._r.m=3; }
-    public void PUSHDE() { z80._r.sp--; mMU.wb(z80._r.sp,(byte)z80._r.d); z80._r.sp--; mMU.wb(z80._r.sp,(byte)z80._r.e); z80._r.m=3; }
-    public void PUSHHL() { z80._r.sp--; mMU.wb(z80._r.sp,(byte)z80._r.h); z80._r.sp--; mMU.wb(z80._r.sp,(byte)z80._r.l); z80._r.m=3; }
-    public void PUSHAF() { z80._r.sp--; mMU.wb(z80._r.sp,(byte)z80._r.a); z80._r.sp--; mMU.wb(z80._r.sp,(byte)z80._r.f); z80._r.m=3; }
-
-    public void POPBC() { z80._r.c=mMU.rb(z80._r.sp); z80._r.sp++; z80._r.b=mMU.rb(z80._r.sp); z80._r.sp++; z80._r.m=3; }
-    public void POPDE() { z80._r.e=mMU.rb(z80._r.sp); z80._r.sp++; z80._r.d=mMU.rb(z80._r.sp); z80._r.sp++; z80._r.m=3; }
-    public void POPHL() { z80._r.l=mMU.rb(z80._r.sp); z80._r.sp++; z80._r.h=mMU.rb(z80._r.sp); z80._r.sp++; z80._r.m=3; }
-    public void POPAF() { z80._r.f=mMU.rb(z80._r.sp); z80._r.sp++; z80._r.a=mMU.rb(z80._r.sp); z80._r.sp++; z80._r.m=3; }
-
-    /*--- Jump ---*/
-    public void JPnn() { z80._r.pc = mMU.rw(z80._r.pc); z80._r.m=3; }
-    public void JPHL() { z80._r.pc=(z80._r.h<<8)+z80._r.l; z80._r.m=1; }
-    public void JPNZnn() { z80._r.m=3; if((z80._r.f&0x80)==0x00) { z80._r.pc=mMU.rw(z80._r.pc); z80._r.m++; } else z80._r.pc+=2; }
-    public void JPZnn()  { z80._r.m=3; if((z80._r.f&0x80)==0x80) { z80._r.pc=mMU.rw(z80._r.pc); z80._r.m++; } else z80._r.pc+=2; }
-    public void JPNCnn() { z80._r.m=3; if((z80._r.f&0x10)==0x00) { z80._r.pc=mMU.rw(z80._r.pc); z80._r.m++; } else z80._r.pc+=2; }
-    public void JPCnn()  { z80._r.m=3; if((z80._r.f&0x10)==0x10) { z80._r.pc=mMU.rw(z80._r.pc); z80._r.m++; } else z80._r.pc+=2; }
-
-    public void JRn() { int i=mMU.rb(z80._r.pc); if(i>127) i=-((~i+1)&0xFF); z80._r.pc++; z80._r.m=2; z80._r.pc+=i; z80._r.m++; }
-    public void JRNZn() { int i=mMU.rb(z80._r.pc); if(i>127) i=-((~i+1)&0xFF); z80._r.pc++; z80._r.m=2; if((z80._r.f&0x80)==0x00) { z80._r.pc+=i; z80._r.m++; } }
-    public void JRZn()  { int i=mMU.rb(z80._r.pc); if(i>127) i=-((~i+1)&0xFF); z80._r.pc++; z80._r.m=2; if((z80._r.f&0x80)==0x80) { z80._r.pc+=i; z80._r.m++; } }
-    public void JRNCn() { int i=mMU.rb(z80._r.pc); if(i>127) i=-((~i+1)&0xFF); z80._r.pc++; z80._r.m=2; if((z80._r.f&0x10)==0x00) { z80._r.pc+=i; z80._r.m++; } }
-    public void JRCn()  { int i=mMU.rb(z80._r.pc); if(i>127) i=-((~i+1)&0xFF); z80._r.pc++; z80._r.m=2; if((z80._r.f&0x10)==0x10) { z80._r.pc+=i; z80._r.m++; } }
-
-    public void DJNZn() { int i=mMU.rb(z80._r.pc); if(i>127) i=-((~i+1)&0xFF); z80._r.pc++; z80._r.m=2; z80._r.b--; if(z80._r.b>0) { z80._r.pc+=i; z80._r.m++; } }
-
-    public void CALLnn() { z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc+2); z80._r.pc=mMU.rw(z80._r.pc); z80._r.m=5; }
-    public void CALLNZnn() { z80._r.m=3; if((z80._r.f&0x80)==0x00) { z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc+2); z80._r.pc=mMU.rw(z80._r.pc); z80._r.m+=2; } else z80._r.pc+=2; }
-    public void CALLZnn() { z80._r.m=3; if((z80._r.f&0x80)==0x80) { z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc+2); z80._r.pc=mMU.rw(z80._r.pc); z80._r.m+=2; } else z80._r.pc+=2; }
-    public void CALLNCnn() { z80._r.m=3; if((z80._r.f&0x10)==0x00) { z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc+2); z80._r.pc=mMU.rw(z80._r.pc); z80._r.m+=2; } else z80._r.pc+=2; }
-    public void CALLCnn() { z80._r.m=3; if((z80._r.f&0x10)==0x10) { z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc+2); z80._r.pc=mMU.rw(z80._r.pc); z80._r.m+=2; } else z80._r.pc+=2; }
-
-    public void RET() { z80._r.pc=mMU.rw(z80._r.sp); z80._r.sp+=2; z80._r.m=3; }
-    public void RETI() { z80._r.ime=1; z80._ops.rrs(); z80._r.pc=mMU.rw(z80._r.sp); z80._r.sp+=2; z80._r.m=3; }
-    public void RETNZ() { z80._r.m=1; if((z80._r.f&0x80)==0x00) { z80._r.pc=mMU.rw(z80._r.sp); z80._r.sp+=2; z80._r.m+=2; } }
-    public void RETZ() { z80._r.m=1; if((z80._r.f&0x80)==0x80) { z80._r.pc=mMU.rw(z80._r.sp); z80._r.sp+=2; z80._r.m+=2; } }
-    public void RETNC() { z80._r.m=1; if((z80._r.f&0x10)==0x00) { z80._r.pc=mMU.rw(z80._r.sp); z80._r.sp+=2; z80._r.m+=2; } }
-    public void RETC() { z80._r.m=1; if((z80._r.f&0x10)==0x10) { z80._r.pc=mMU.rw(z80._r.sp); z80._r.sp+=2; z80._r.m+=2; } }
-
-    public void RST00() { z80._ops.rsv(); z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc); z80._r.pc=0x00; z80._r.m=3; }
-    public void RST08() { z80._ops.rsv(); z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc); z80._r.pc=0x08; z80._r.m=3; }
-    public void RST10() { z80._ops.rsv(); z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc); z80._r.pc=0x10; z80._r.m=3; }
-    public void RST18() { z80._ops.rsv(); z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc); z80._r.pc=0x18; z80._r.m=3; }
-    public void RST20() { z80._ops.rsv(); z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc); z80._r.pc=0x20; z80._r.m=3; }
-    public void RST28() { z80._ops.rsv(); z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc); z80._r.pc=0x28; z80._r.m=3; }
-    public void RST30() { z80._ops.rsv(); z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc); z80._r.pc=0x30; z80._r.m=3; }
-    public void RST38() { z80._ops.rsv(); z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc); z80._r.pc=0x38; z80._r.m=3; }
-    public void RST40() { z80._ops.rsv(); z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc); z80._r.pc=0x40; z80._r.m=3; }
-    public void RST48() { z80._ops.rsv(); z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc); z80._r.pc=0x48; z80._r.m=3; }
-    public void RST50() { z80._ops.rsv(); z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc); z80._r.pc=0x50; z80._r.m=3; }
-    public void RST58() { z80._ops.rsv(); z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc); z80._r.pc=0x58; z80._r.m=3; }
-    public void RST60() { z80._ops.rsv(); z80._r.sp-=2; mMU.ww(z80._r.sp,z80._r.pc); z80._r.pc=0x60; z80._r.m=3; }
-
-    public void NOP() { z80._r.m=1; }
-    public void HALT() { z80._halt=1; z80._r.m=1; }
-
-    public void DI() { z80._r.ime=0; z80._r.m=1; }
-    public void EI() { z80._r.ime=1; z80._r.m=1; }
-
-    /*--- Helper functions ---*/
-    public void rsv() {
-      z80._rsv.a = z80._r.a; z80._rsv.b = z80._r.b;
-      z80._rsv.c = z80._r.c; z80._rsv.d = z80._r.d;
-      z80._rsv.e = z80._r.e; z80._rsv.f = z80._r.f;
-      z80._rsv.h = z80._r.h; z80._rsv.l = z80._r.l;
-    }
-
-    public void rrs() {
-      z80._r.a = z80._rsv.a; z80._r.b = z80._rsv.b;
-      z80._r.c = z80._rsv.c; z80._r.d = z80._rsv.d;
-      z80._r.e = z80._rsv.e; z80._r.f = z80._rsv.f;
-      z80._r.h = z80._rsv.h; z80._r.l = z80._rsv.l;
-    }
-
-    public void MAPcb() {
-      int i=mMU.rb(z80._r.pc); z80._r.pc++;
-      z80._r.pc &= 65535;
-      if(z80._cbmap[i] != null) z80._cbmap[i]();
-      else throw new Exception("Z80: MAPcb i = " + i);
-    }
-
-    public void XX() {
-      /*Undefined map entry*/
-      var opc = z80._r.pc-1;
-      throw new Exception("Z80: Unimplemented instruction at $"+opc+", stopping.");
-      z80._stop=1;
-    }
-};
-
-
 class Z80 
 {
-  public Z80r _r = new Z80r();
+  public Z80r r = new Z80r();
 
-  public Z80rsv _rsv = new Z80rsv();
+  public Z80rsv rv = new Z80rsv();
 
   public Z80clock _clock = new Z80clock();
 
   public int _halt = 0;
   public int _stop = 0;
-  private MMU mMU;
+  MMU mMU;
   
   public Z80()
   {    
 
     this._map = new Action[256]{
       // 00
-      this._ops.NOP,		this._ops.LDBCnn,	this._ops.LDBCmA,	this._ops.INCBC,
-      this._ops.INCr_b,	this._ops.DECr_b,	this._ops.LDrn_b,	this._ops.RLCA,
-      this._ops.LDmmSP,	this._ops.ADDHLBC,	this._ops.LDABCm,	this._ops.DECBC,
-      this._ops.INCr_c,	this._ops.DECr_c,	this._ops.LDrn_c,	this._ops.RRCA,
+      NOP,		LDBCnn,	LDBCmA,	INCBC,
+      INCr_b,	DECr_b,	LDrn_b,	RLCA,
+      LDmmSP,	ADDHLBC,	LDABCm,	DECBC,
+      INCr_c,	DECr_c,	LDrn_c,	RRCA,
       // 10
-      this._ops.DJNZn,	this._ops.LDDEnn,	this._ops.LDDEmA,	this._ops.INCDE,
-      this._ops.INCr_d,	this._ops.DECr_d,	this._ops.LDrn_d,	this._ops.RLA,
-      this._ops.JRn,		this._ops.ADDHLDE,	this._ops.LDADEm,	this._ops.DECDE,
-      this._ops.INCr_e,	this._ops.DECr_e,	this._ops.LDrn_e,	this._ops.RRA,
+      DJNZn,	LDDEnn,	LDDEmA,	INCDE,
+      INCr_d,	DECr_d,	LDrn_d,	RLA,
+      JRn,		ADDHLDE,	LDADEm,	DECDE,
+      INCr_e,	DECr_e,	LDrn_e,	RRA,
       // 20
-      this._ops.JRNZn,	this._ops.LDHLnn,	this._ops.LDHLIA,	this._ops.INCHL,
-      this._ops.INCr_h,	this._ops.DECr_h,	this._ops.LDrn_h,	this._ops.DAA,
-      this._ops.JRZn,	this._ops.ADDHLHL,	this._ops.LDAHLI,	this._ops.DECHL,
-      this._ops.INCr_l,	this._ops.DECr_l,	this._ops.LDrn_l,	this._ops.CPL,
+      JRNZn,	LDHLnn,	LDHLIA,	INCHL,
+      INCr_h,	DECr_h,	LDrn_h,	DAA,
+      JRZn,	ADDHLHL,	LDAHLI,	DECHL,
+      INCr_l,	DECr_l,	LDrn_l,	CPL,
       // 30
-      this._ops.JRNCn,	this._ops.LDSPnn,	this._ops.LDHLDA,	this._ops.INCSP,
-      this._ops.INCHLm,	this._ops.DECHLm,	this._ops.LDHLmn,	this._ops.SCF,
-      this._ops.JRCn,	this._ops.ADDHLSP,	this._ops.LDAHLD,	this._ops.DECSP,
-      this._ops.INCr_a,	this._ops.DECr_a,	this._ops.LDrn_a,	this._ops.CCF,
+      JRNCn,	LDSPnn,	LDHLDA,	INCSP,
+      INCHLm,	DECHLm,	LDHLmn,	SCF,
+      JRCn,	ADDHLSP,	LDAHLD,	DECSP,
+      INCr_a,	DECr_a,	LDrn_a,	CCF,
       // 40
-      this._ops.LDrr_bb,	this._ops.LDrr_bc,	this._ops.LDrr_bd,	this._ops.LDrr_be,
-      this._ops.LDrr_bh,	this._ops.LDrr_bl,	this._ops.LDrHLm_b,	this._ops.LDrr_ba,
-      this._ops.LDrr_cb,	this._ops.LDrr_cc,	this._ops.LDrr_cd,	this._ops.LDrr_ce,
-      this._ops.LDrr_ch,	this._ops.LDrr_cl,	this._ops.LDrHLm_c,	this._ops.LDrr_ca,
+      LDrr_bb,	LDrr_bc,	LDrr_bd,	LDrr_be,
+      LDrr_bh,	LDrr_bl,	LDrHLm_b,	LDrr_ba,
+      LDrr_cb,	LDrr_cc,	LDrr_cd,	LDrr_ce,
+      LDrr_ch,	LDrr_cl,	LDrHLm_c,	LDrr_ca,
       // 50
-      this._ops.LDrr_db,	this._ops.LDrr_dc,	this._ops.LDrr_dd,	this._ops.LDrr_de,
-      this._ops.LDrr_dh,	this._ops.LDrr_dl,	this._ops.LDrHLm_d,	this._ops.LDrr_da,
-      this._ops.LDrr_eb,	this._ops.LDrr_ec,	this._ops.LDrr_ed,	this._ops.LDrr_ee,
-      this._ops.LDrr_eh,	this._ops.LDrr_el,	this._ops.LDrHLm_e,	this._ops.LDrr_ea,
+      LDrr_db,	LDrr_dc,	LDrr_dd,	LDrr_de,
+      LDrr_dh,	LDrr_dl,	LDrHLm_d,	LDrr_da,
+      LDrr_eb,	LDrr_ec,	LDrr_ed,	LDrr_ee,
+      LDrr_eh,	LDrr_el,	LDrHLm_e,	LDrr_ea,
       // 60
-      this._ops.LDrr_hb,	this._ops.LDrr_hc,	this._ops.LDrr_hd,	this._ops.LDrr_he,
-      this._ops.LDrr_hh,	this._ops.LDrr_hl,	this._ops.LDrHLm_h,	this._ops.LDrr_ha,
-      this._ops.LDrr_lb,	this._ops.LDrr_lc,	this._ops.LDrr_ld,	this._ops.LDrr_le,
-      this._ops.LDrr_lh,	this._ops.LDrr_ll,	this._ops.LDrHLm_l,	this._ops.LDrr_la,
+      LDrr_hb,	LDrr_hc,	LDrr_hd,	LDrr_he,
+      LDrr_hh,	LDrr_hl,	LDrHLm_h,	LDrr_ha,
+      LDrr_lb,	LDrr_lc,	LDrr_ld,	LDrr_le,
+      LDrr_lh,	LDrr_ll,	LDrHLm_l,	LDrr_la,
       // 70
-      this._ops.LDHLmr_b,	this._ops.LDHLmr_c,	this._ops.LDHLmr_d,	this._ops.LDHLmr_e,
-      this._ops.LDHLmr_h,	this._ops.LDHLmr_l,	this._ops.HALT,		this._ops.LDHLmr_a,
-      this._ops.LDrr_ab,	this._ops.LDrr_ac,	this._ops.LDrr_ad,	this._ops.LDrr_ae,
-      this._ops.LDrr_ah,	this._ops.LDrr_al,	this._ops.LDrHLm_a,	this._ops.LDrr_aa,
+      LDHLmr_b,	LDHLmr_c,	LDHLmr_d,	LDHLmr_e,
+      LDHLmr_h,	LDHLmr_l,	HALT,		LDHLmr_a,
+      LDrr_ab,	LDrr_ac,	LDrr_ad,	LDrr_ae,
+      LDrr_ah,	LDrr_al,	LDrHLm_a,	LDrr_aa,
       // 80
-      this._ops.ADDr_b,	this._ops.ADDr_c,	this._ops.ADDr_d,	this._ops.ADDr_e,
-      this._ops.ADDr_h,	this._ops.ADDr_l,	this._ops.ADDHL,		this._ops.ADDr_a,
-      this._ops.ADCr_b,	this._ops.ADCr_c,	this._ops.ADCr_d,	this._ops.ADCr_e,
-      this._ops.ADCr_h,	this._ops.ADCr_l,	this._ops.ADCHL,		this._ops.ADCr_a,
+      ADDr_b,	ADDr_c,	ADDr_d,	ADDr_e,
+      ADDr_h,	ADDr_l,	ADDHL,		ADDr_a,
+      ADCr_b,	ADCr_c,	ADCr_d,	ADCr_e,
+      ADCr_h,	ADCr_l,	ADCHL,		ADCr_a,
       // 90
-      this._ops.SUBr_b,	this._ops.SUBr_c,	this._ops.SUBr_d,	this._ops.SUBr_e,
-      this._ops.SUBr_h,	this._ops.SUBr_l,	this._ops.SUBHL,		this._ops.SUBr_a,
-      this._ops.SBCr_b,	this._ops.SBCr_c,	this._ops.SBCr_d,	this._ops.SBCr_e,
-      this._ops.SBCr_h,	this._ops.SBCr_l,	this._ops.SBCHL,		this._ops.SBCr_a,
+      SUBr_b,	SUBr_c,	SUBr_d,	SUBr_e,
+      SUBr_h,	SUBr_l,	SUBHL,		SUBr_a,
+      SBCr_b,	SBCr_c,	SBCr_d,	SBCr_e,
+      SBCr_h,	SBCr_l,	SBCHL,		SBCr_a,
       // A0
-      this._ops.ANDr_b,	this._ops.ANDr_c,	this._ops.ANDr_d,	this._ops.ANDr_e,
-      this._ops.ANDr_h,	this._ops.ANDr_l,	this._ops.ANDHL,		this._ops.ANDr_a,
-      this._ops.XORr_b,	this._ops.XORr_c,	this._ops.XORr_d,	this._ops.XORr_e,
-      this._ops.XORr_h,	this._ops.XORr_l,	this._ops.XORHL,		this._ops.XORr_a,
+      ANDr_b,	ANDr_c,	ANDr_d,	ANDr_e,
+      ANDr_h,	ANDr_l,	ANDHL,		ANDr_a,
+      XORr_b,	XORr_c,	XORr_d,	XORr_e,
+      XORr_h,	XORr_l,	XORHL,		XORr_a,
       // B0
-      this._ops.ORr_b,	this._ops.ORr_c,		this._ops.ORr_d,		this._ops.ORr_e,
-      this._ops.ORr_h,	this._ops.ORr_l,		this._ops.ORHL,		this._ops.ORr_a,
-      this._ops.CPr_b,	this._ops.CPr_c,		this._ops.CPr_d,		this._ops.CPr_e,
-      this._ops.CPr_h,	this._ops.CPr_l,		this._ops.CPHL,		this._ops.CPr_a,
+      ORr_b,	ORr_c,		ORr_d,		ORr_e,
+      ORr_h,	ORr_l,		ORHL,		ORr_a,
+      CPr_b,	CPr_c,		CPr_d,		CPr_e,
+      CPr_h,	CPr_l,		CPHL,		CPr_a,
       // C0
-      this._ops.RETNZ,	this._ops.POPBC,		this._ops.JPNZnn,	this._ops.JPnn,
-      this._ops.CALLNZnn,	this._ops.PUSHBC,	this._ops.ADDn,		this._ops.RST00,
-      this._ops.RETZ,	this._ops.RET,		this._ops.JPZnn,		this._ops.MAPcb,
-      this._ops.CALLZnn,	this._ops.CALLnn,	this._ops.ADCn,		this._ops.RST08,
+      RETNZ,	POPBC,		JPNZnn,	JPnn,
+      CALLNZnn,	PUSHBC,	ADDn,		RST00,
+      RETZ,	RET,		JPZnn,		MAPcb,
+      CALLZnn,	CALLnn,	ADCn,		RST08,
       // D0
-      this._ops.RETNC,	this._ops.POPDE,		this._ops.JPNCnn,	this._ops.XX,
-      this._ops.CALLNCnn,	this._ops.PUSHDE,	this._ops.SUBn,		this._ops.RST10,
-      this._ops.RETC,	this._ops.RETI,		this._ops.JPCnn,		this._ops.XX,
-      this._ops.CALLCnn,	this._ops.XX,		this._ops.SBCn,		this._ops.RST18,
+      RETNC,	POPDE,		JPNCnn,	XX,
+      CALLNCnn,	PUSHDE,	SUBn,		RST10,
+      RETC,	RETI,		JPCnn,		XX,
+      CALLCnn,	XX,		SBCn,		RST18,
       // E0
-      this._ops.LDIOnA,	this._ops.POPHL,		this._ops.LDIOCA,	this._ops.XX,
-      this._ops.XX,		this._ops.PUSHHL,	this._ops.ANDn,		this._ops.RST20,
-      this._ops.ADDSPn,	this._ops.JPHL,		this._ops.LDmmA,		this._ops.XX,
-      this._ops.XX,		this._ops.XX,		this._ops.XORn,		this._ops.RST28,
+      LDIOnA,	POPHL,		LDIOCA,	XX,
+      XX,		PUSHHL,	ANDn,		RST20,
+      ADDSPn,	JPHL,		LDmmA,		XX,
+      XX,		XX,		XORn,		RST28,
       // F0
-      this._ops.LDAIOn,	this._ops.POPAF,		this._ops.LDAIOC,	this._ops.DI,
-      this._ops.XX,		this._ops.PUSHAF,	this._ops.ORn,		this._ops.RST30,
-      this._ops.LDHLSPn,	this._ops.XX,		this._ops.LDAmm,		this._ops.EI,
-      this._ops.XX,		this._ops.XX,		this._ops.CPn,		this._ops.RST38
+      LDAIOn,	POPAF,		LDAIOC,	DI,
+      XX,		PUSHAF,	ORn,		RST30,
+      LDHLSPn,	XX,		LDAmm,		EI,
+      XX,		XX,		CPn,		RST38
     };
 
     this._cbmap = new Action[256]{
       // CB00
-      this._ops.RLCr_b,	this._ops.RLCr_c,	this._ops.RLCr_d,	this._ops.RLCr_e,
-      this._ops.RLCr_h,	this._ops.RLCr_l,	this._ops.RLCHL,		this._ops.RLCr_a,
-      this._ops.RRCr_b,	this._ops.RRCr_c,	this._ops.RRCr_d,	this._ops.RRCr_e,
-      this._ops.RRCr_h,	this._ops.RRCr_l,	this._ops.RRCHL,		this._ops.RRCr_a,
+      RLCr_b,	RLCr_c,	RLCr_d,	RLCr_e,
+      RLCr_h,	RLCr_l,	RLCHL,		RLCr_a,
+      RRCr_b,	RRCr_c,	RRCr_d,	RRCr_e,
+      RRCr_h,	RRCr_l,	RRCHL,		RRCr_a,
       // CB10
-      this._ops.RLr_b,	this._ops.RLr_c,		this._ops.RLr_d,		this._ops.RLr_e,
-      this._ops.RLr_h,	this._ops.RLr_l,		this._ops.RLHL,		this._ops.RLr_a,
-      this._ops.RRr_b,	this._ops.RRr_c,		this._ops.RRr_d,		this._ops.RRr_e,
-      this._ops.RRr_h,	this._ops.RRr_l,		this._ops.RRHL,		this._ops.RRr_a,
+      RLr_b,	RLr_c,		RLr_d,		RLr_e,
+      RLr_h,	RLr_l,		RLHL,		RLr_a,
+      RRr_b,	RRr_c,		RRr_d,		RRr_e,
+      RRr_h,	RRr_l,		RRHL,		RRr_a,
       // CB20
-      this._ops.SLAr_b,	this._ops.SLAr_c,	this._ops.SLAr_d,	this._ops.SLAr_e,
-      this._ops.SLAr_h,	this._ops.SLAr_l,	this._ops.XX,		this._ops.SLAr_a,
-      this._ops.SRAr_b,	this._ops.SRAr_c,	this._ops.SRAr_d,	this._ops.SRAr_e,
-      this._ops.SRAr_h,	this._ops.SRAr_l,	this._ops.XX,		this._ops.SRAr_a,
+      SLAr_b,	SLAr_c,	SLAr_d,	SLAr_e,
+      SLAr_h,	SLAr_l,	XX,		SLAr_a,
+      SRAr_b,	SRAr_c,	SRAr_d,	SRAr_e,
+      SRAr_h,	SRAr_l,	XX,		SRAr_a,
       // CB30
-      this._ops.SWAPr_b,	this._ops.SWAPr_c,	this._ops.SWAPr_d,	this._ops.SWAPr_e,
-      this._ops.SWAPr_h,	this._ops.SWAPr_l,	this._ops.XX,		this._ops.SWAPr_a,
-      this._ops.SRLr_b,	this._ops.SRLr_c,	this._ops.SRLr_d,	this._ops.SRLr_e,
-      this._ops.SRLr_h,	this._ops.SRLr_l,	this._ops.XX,		this._ops.SRLr_a,
+      SWAPr_b,	SWAPr_c,	SWAPr_d,	SWAPr_e,
+      SWAPr_h,	SWAPr_l,	XX,		SWAPr_a,
+      SRLr_b,	SRLr_c,	SRLr_d,	SRLr_e,
+      SRLr_h,	SRLr_l,	XX,		SRLr_a,
       // CB40
-      this._ops.BIT0b,	this._ops.BIT0c,		this._ops.BIT0d,		this._ops.BIT0e,
-      this._ops.BIT0h,	this._ops.BIT0l,		this._ops.BIT0m,		this._ops.BIT0a,
-      this._ops.BIT1b,	this._ops.BIT1c,		this._ops.BIT1d,		this._ops.BIT1e,
-      this._ops.BIT1h,	this._ops.BIT1l,		this._ops.BIT1m,		this._ops.BIT1a,
+      BIT0b,	BIT0c,		BIT0d,		BIT0e,
+      BIT0h,	BIT0l,		BIT0m,		BIT0a,
+      BIT1b,	BIT1c,		BIT1d,		BIT1e,
+      BIT1h,	BIT1l,		BIT1m,		BIT1a,
       // CB50
-      this._ops.BIT2b,	this._ops.BIT2c,		this._ops.BIT2d,		this._ops.BIT2e,
-      this._ops.BIT2h,	this._ops.BIT2l,		this._ops.BIT2m,		this._ops.BIT2a,
-      this._ops.BIT3b,	this._ops.BIT3c,		this._ops.BIT3d,		this._ops.BIT3e,
-      this._ops.BIT3h,	this._ops.BIT3l,		this._ops.BIT3m,		this._ops.BIT3a,
+      BIT2b,	BIT2c,		BIT2d,		BIT2e,
+      BIT2h,	BIT2l,		BIT2m,		BIT2a,
+      BIT3b,	BIT3c,		BIT3d,		BIT3e,
+      BIT3h,	BIT3l,		BIT3m,		BIT3a,
       // CB60
-      this._ops.BIT4b,	this._ops.BIT4c,		this._ops.BIT4d,		this._ops.BIT4e,
-      this._ops.BIT4h,	this._ops.BIT4l,		this._ops.BIT4m,		this._ops.BIT4a,
-      this._ops.BIT5b,	this._ops.BIT5c,		this._ops.BIT5d,		this._ops.BIT5e,
-      this._ops.BIT5h,	this._ops.BIT5l,		this._ops.BIT5m,		this._ops.BIT5a,
+      BIT4b,	BIT4c,		BIT4d,		BIT4e,
+      BIT4h,	BIT4l,		BIT4m,		BIT4a,
+      BIT5b,	BIT5c,		BIT5d,		BIT5e,
+      BIT5h,	BIT5l,		BIT5m,		BIT5a,
       // CB70
-      this._ops.BIT6b,	this._ops.BIT6c,		this._ops.BIT6d,		this._ops.BIT6e,
-      this._ops.BIT6h,	this._ops.BIT6l,		this._ops.BIT6m,		this._ops.BIT6a,
-      this._ops.BIT7b,	this._ops.BIT7c,		this._ops.BIT7d,		this._ops.BIT7e,
-      this._ops.BIT7h,	this._ops.BIT7l,		this._ops.BIT7m,		this._ops.BIT7a,
+      BIT6b,	BIT6c,		BIT6d,		BIT6e,
+      BIT6h,	BIT6l,		BIT6m,		BIT6a,
+      BIT7b,	BIT7c,		BIT7d,		BIT7e,
+      BIT7h,	BIT7l,		BIT7m,		BIT7a,
       // CB80
-      this._ops.RES0b,	this._ops.RES0c,		this._ops.RES0d,		this._ops.RES0e,
-      this._ops.RES0h,	this._ops.RES0l,		this._ops.RES0m,		this._ops.RES0a,
-      this._ops.RES1b,	this._ops.RES1c,		this._ops.RES1d,		this._ops.RES1e,
-      this._ops.RES1h,	this._ops.RES1l,		this._ops.RES1m,		this._ops.RES1a,
+      RES0b,	RES0c,		RES0d,		RES0e,
+      RES0h,	RES0l,		RES0m,		RES0a,
+      RES1b,	RES1c,		RES1d,		RES1e,
+      RES1h,	RES1l,		RES1m,		RES1a,
       // CB90
-      this._ops.RES2b,	this._ops.RES2c,		this._ops.RES2d,		this._ops.RES2e,
-      this._ops.RES2h,	this._ops.RES2l,		this._ops.RES2m,		this._ops.RES2a,
-      this._ops.RES3b,	this._ops.RES3c,		this._ops.RES3d,		this._ops.RES3e,
-      this._ops.RES3h,	this._ops.RES3l,		this._ops.RES3m,		this._ops.RES3a,
+      RES2b,	RES2c,		RES2d,		RES2e,
+      RES2h,	RES2l,		RES2m,		RES2a,
+      RES3b,	RES3c,		RES3d,		RES3e,
+      RES3h,	RES3l,		RES3m,		RES3a,
       // CBA0
-      this._ops.RES4b,	this._ops.RES4c,		this._ops.RES4d,		this._ops.RES4e,
-      this._ops.RES4h,	this._ops.RES4l,		this._ops.RES4m,		this._ops.RES4a,
-      this._ops.RES5b,	this._ops.RES5c,		this._ops.RES5d,		this._ops.RES5e,
-      this._ops.RES5h,	this._ops.RES5l,		this._ops.RES5m,		this._ops.RES5a,
+      RES4b,	RES4c,		RES4d,		RES4e,
+      RES4h,	RES4l,		RES4m,		RES4a,
+      RES5b,	RES5c,		RES5d,		RES5e,
+      RES5h,	RES5l,		RES5m,		RES5a,
       // CBB0
-      this._ops.RES6b,	this._ops.RES6c,		this._ops.RES6d,		this._ops.RES6e,
-      this._ops.RES6h,	this._ops.RES6l,		this._ops.RES6m,		this._ops.RES6a,
-      this._ops.RES7b,	this._ops.RES7c,		this._ops.RES7d,		this._ops.RES7e,
-      this._ops.RES7h,	this._ops.RES7l,		this._ops.RES7m,		this._ops.RES7a,
+      RES6b,	RES6c,		RES6d,		RES6e,
+      RES6h,	RES6l,		RES6m,		RES6a,
+      RES7b,	RES7c,		RES7d,		RES7e,
+      RES7h,	RES7l,		RES7m,		RES7a,
       // CBC0
-      this._ops.SET0b,	this._ops.SET0c,		this._ops.SET0d,		this._ops.SET0e,
-      this._ops.SET0h,	this._ops.SET0l,		this._ops.SET0m,		this._ops.SET0a,
-      this._ops.SET1b,	this._ops.SET1c,		this._ops.SET1d,		this._ops.SET1e,
-      this._ops.SET1h,	this._ops.SET1l,		this._ops.SET1m,		this._ops.SET1a,
+      SET0b,	SET0c,		SET0d,		SET0e,
+      SET0h,	SET0l,		SET0m,		SET0a,
+      SET1b,	SET1c,		SET1d,		SET1e,
+      SET1h,	SET1l,		SET1m,		SET1a,
       // CBD0
-      this._ops.SET2b,	this._ops.SET2c,		this._ops.SET2d,		this._ops.SET2e,
-      this._ops.SET2h,	this._ops.SET2l,		this._ops.SET2m,		this._ops.SET2a,
-      this._ops.SET3b,	this._ops.SET3c,		this._ops.SET3d,		this._ops.SET3e,
-      this._ops.SET3h,	this._ops.SET3l,		this._ops.SET3m,		this._ops.SET3a,
+      SET2b,	SET2c,		SET2d,		SET2e,
+      SET2h,	SET2l,		SET2m,		SET2a,
+      SET3b,	SET3c,		SET3d,		SET3e,
+      SET3h,	SET3l,		SET3m,		SET3a,
       // CBE0
-      this._ops.SET4b,	this._ops.SET4c,		this._ops.SET4d,		this._ops.SET4e,
-      this._ops.SET4h,	this._ops.SET4l,		this._ops.SET4m,		this._ops.SET4a,
-      this._ops.SET5b,	this._ops.SET5c,		this._ops.SET5d,		this._ops.SET5e,
-      this._ops.SET5h,	this._ops.SET5l,		this._ops.SET5m,		this._ops.SET5a,
+      SET4b,	SET4c,		SET4d,		SET4e,
+      SET4h,	SET4l,		SET4m,		SET4a,
+      SET5b,	SET5c,		SET5d,		SET5e,
+      SET5h,	SET5l,		SET5m,		SET5a,
       // CBF0
-      this._ops.SET6b,	this._ops.SET6c,		this._ops.SET6d,		this._ops.SET6e,
-      this._ops.SET6h,	this._ops.SET6l,		this._ops.SET6m,		this._ops.SET6a,
-      this._ops.SET7b,	this._ops.SET7c,		this._ops.SET7d,		this._ops.SET7e,
-      this._ops.SET7h,	this._ops.SET7l,		this._ops.SET7m,		this._ops.SET7a,
+      SET6b,	SET6c,		SET6d,		SET6e,
+      SET6h,	SET6l,		SET6m,		SET6a,
+      SET7b,	SET7c,		SET7d,		SET7e,
+      SET7h,	SET7l,		SET7m,		SET7a,
     };
   }
   public void reset(MMU mMU) {
     this.mMU = mMU;
-    this._ops = new Z80ops(this, mMU);
-    this._r.a=0; this._r.b=0; this._r.c=0; this._r.d=0; this._r.e=0; this._r.h=0; this._r.l=0; this._r.f=0;
-    this._r.sp=0; this._r.pc=0; this._r.i=0; this._r.r=0;
-    this._r.m=0;
+    this.r.a=0; this.r.b=0; this.r.c=0; this.r.d=0; this.r.e=0; this.r.h=0; this.r.l=0; this.r.f=0;
+    this.r.sp=0; this.r.pc=0; this.r.i=0; this.r.r=0;
+    this.r.m=0;
     this._halt=0; this._stop=0;
     this._clock.m=0;
-    this._r.ime=1;
+    this.r.ime=1;
     //Echo("Z80: Reset.");
   }
 
   public void exec() {
-    this._r.r = (this._r.r+1) & 127;
-    this._map[mMU.rb(this._r.pc++)]();
-    this._r.pc &= 65535;
-    this._clock.m += this._r.m;
+    this.r.r = (this.r.r+1) & 127;
+    this._map[mMU.rb(this.r.pc++)]();
+    this.r.pc &= 65535;
+    this._clock.m += this.r.m;
   }
-
-  public Z80ops _ops;
 
   public Action[] _map;
   public Action[] _cbmap;
+
+  
+  /*--- Load/store ---*/
+    public void LDrr_bb() { r.b=r.b; r.m=1; }
+    public void LDrr_bc() { r.b=r.c; r.m=1; }
+    public void LDrr_bd() { r.b=r.d; r.m=1; }
+    public void LDrr_be() { r.b=r.e; r.m=1; }
+    public void LDrr_bh() { r.b=r.h; r.m=1; }
+    public void LDrr_bl() { r.b=r.l; r.m=1; }
+    public void LDrr_ba() { r.b=r.a; r.m=1; }
+    public void LDrr_cb() { r.c=r.b; r.m=1; }
+    public void LDrr_cc() { r.c=r.c; r.m=1; }
+    public void LDrr_cd() { r.c=r.d; r.m=1; }
+    public void LDrr_ce() { r.c=r.e; r.m=1; }
+    public void LDrr_ch() { r.c=r.h; r.m=1; }
+    public void LDrr_cl() { r.c=r.l; r.m=1; }
+    public void LDrr_ca() { r.c=r.a; r.m=1; }
+    public void LDrr_db() { r.d=r.b; r.m=1; }
+    public void LDrr_dc() { r.d=r.c; r.m=1; }
+    public void LDrr_dd() { r.d=r.d; r.m=1; }
+    public void LDrr_de() { r.d=r.e; r.m=1; }
+    public void LDrr_dh() { r.d=r.h; r.m=1; }
+    public void LDrr_dl() { r.d=r.l; r.m=1; }
+    public void LDrr_da() { r.d=r.a; r.m=1; }
+    public void LDrr_eb() { r.e=r.b; r.m=1; }
+    public void LDrr_ec() { r.e=r.c; r.m=1; }
+    public void LDrr_ed() { r.e=r.d; r.m=1; }
+    public void LDrr_ee() { r.e=r.e; r.m=1; }
+    public void LDrr_eh() { r.e=r.h; r.m=1; }
+    public void LDrr_el() { r.e=r.l; r.m=1; }
+    public void LDrr_ea() { r.e=r.a; r.m=1; }
+    public void LDrr_hb() { r.h=r.b; r.m=1; }
+    public void LDrr_hc() { r.h=r.c; r.m=1; }
+    public void LDrr_hd() { r.h=r.d; r.m=1; }
+    public void LDrr_he() { r.h=r.e; r.m=1; }
+    public void LDrr_hh() { r.h=r.h; r.m=1; }
+    public void LDrr_hl() { r.h=r.l; r.m=1; }
+    public void LDrr_ha() { r.h=r.a; r.m=1; }
+    public void LDrr_lb() { r.l=r.b; r.m=1; }
+    public void LDrr_lc() { r.l=r.c; r.m=1; }
+    public void LDrr_ld() { r.l=r.d; r.m=1; }
+    public void LDrr_le() { r.l=r.e; r.m=1; }
+    public void LDrr_lh() { r.l=r.h; r.m=1; }
+    public void LDrr_ll() { r.l=r.l; r.m=1; }
+    public void LDrr_la() { r.l=r.a; r.m=1; }
+    public void LDrr_ab() { r.a=r.b; r.m=1; }
+    public void LDrr_ac() { r.a=r.c; r.m=1; }
+    public void LDrr_ad() { r.a=r.d; r.m=1; }
+    public void LDrr_ae() { r.a=r.e; r.m=1; }
+    public void LDrr_ah() { r.a=r.h; r.m=1; }
+    public void LDrr_al() { r.a=r.l; r.m=1; }
+    public void LDrr_aa() { r.a=r.a; r.m=1; }
+
+    public void LDrHLm_b() { r.b=mMU.rb((r.h<<8)+r.l); r.m=2; }
+    public void LDrHLm_c() { r.c=mMU.rb((r.h<<8)+r.l); r.m=2; }
+    public void LDrHLm_d() { r.d=mMU.rb((r.h<<8)+r.l); r.m=2; }
+    public void LDrHLm_e() { r.e=mMU.rb((r.h<<8)+r.l); r.m=2; }
+    public void LDrHLm_h() { r.h=mMU.rb((r.h<<8)+r.l); r.m=2; }
+    public void LDrHLm_l() { r.l=mMU.rb((r.h<<8)+r.l); r.m=2; }
+    public void LDrHLm_a() { r.a=mMU.rb((r.h<<8)+r.l); r.m=2; }
+
+    public void LDHLmr_b() { mMU.wb((r.h<<8)+r.l,(byte)r.b); r.m=2; }
+    public void LDHLmr_c() { mMU.wb((r.h<<8)+r.l,(byte)r.c); r.m=2; }
+    public void LDHLmr_d() { mMU.wb((r.h<<8)+r.l,(byte)r.d); r.m=2; }
+    public void LDHLmr_e() { mMU.wb((r.h<<8)+r.l,(byte)r.e); r.m=2; }
+    public void LDHLmr_h() { mMU.wb((r.h<<8)+r.l,(byte)r.h); r.m=2; }
+    public void LDHLmr_l() { mMU.wb((r.h<<8)+r.l,(byte)r.l); r.m=2; }
+    public void LDHLmr_a() { mMU.wb((r.h<<8)+r.l,(byte)r.a); r.m=2; }
+
+    public void LDrn_b() { r.b=mMU.rb(r.pc); r.pc++; r.m=2; }
+    public void LDrn_c() { r.c=mMU.rb(r.pc); r.pc++; r.m=2; }
+    public void LDrn_d() { r.d=mMU.rb(r.pc); r.pc++; r.m=2; }
+    public void LDrn_e() { r.e=mMU.rb(r.pc); r.pc++; r.m=2; }
+    public void LDrn_h() { r.h=mMU.rb(r.pc); r.pc++; r.m=2; }
+    public void LDrn_l() { r.l=mMU.rb(r.pc); r.pc++; r.m=2; }
+    public void LDrn_a() { r.a=mMU.rb(r.pc); r.pc++; r.m=2; }
+
+    public void LDHLmn() { mMU.wb((r.h<<8)+r.l, (byte)mMU.rb(r.pc)); r.pc++; r.m=3; }
+
+    public void LDBCmA() { mMU.wb((r.b<<8)+r.c, (byte)r.a); r.m=2; }
+    public void LDDEmA() { mMU.wb((r.d<<8)+r.e, (byte)r.a); r.m=2; }
+
+    public void LDmmA() { mMU.wb(mMU.rw(r.pc), (byte)r.a); r.pc+=2; r.m=4; }
+
+    public void LDmmSP() { /*throw new Exception("Z80: LDmmSP not implemented");*/ }
+
+    public void LDABCm() { r.a=mMU.rb((r.b<<8)+r.c); r.m=2; }
+    public void LDADEm() { r.a=mMU.rb((r.d<<8)+r.e); r.m=2; }
+
+    public void LDAmm() { r.a=mMU.rb(mMU.rw(r.pc)); r.pc+=2; r.m=4; }
+
+    public void LDBCnn() { r.c=mMU.rb(r.pc); r.b=mMU.rb(r.pc+1); r.pc+=2; r.m=3; }
+    public void LDDEnn() { r.e=mMU.rb(r.pc); r.d=mMU.rb(r.pc+1); r.pc+=2; r.m=3; }
+    public void LDHLnn() { r.l=mMU.rb(r.pc); r.h=mMU.rb(r.pc+1); r.pc+=2; r.m=3; }
+    public void LDSPnn() { r.sp=mMU.rw(r.pc); r.pc+=2; r.m=3; }
+
+    public void LDHLmm() { int i=mMU.rw(r.pc); r.pc+=2; r.l=mMU.rb(i); r.h=mMU.rb(i+1); r.m=5; }
+    public void LDmmHL() { int i=mMU.rw(r.pc); r.pc+=2; mMU.ww(i,(r.h<<8)+r.l); r.m=5; }
+
+    public void LDHLIA() { mMU.wb((r.h<<8)+r.l, (byte)r.a); r.l=(r.l+1)&0xFF; if(!(r.l>0)) r.h=(r.h+1)&0xFF; r.m=2; }
+    public void LDAHLI() { r.a=mMU.rb((r.h<<8)+r.l); r.l=(r.l+1)&0xFF; if(!(r.l>0)) r.h=(r.h+1)&0xFF; r.m=2; }
+
+    public void LDHLDA() { mMU.wb((r.h<<8)+r.l, (byte)r.a); r.l=(r.l-1)&0xFF; if(r.l==0xFF) r.h=(r.h-1)&0xFF; r.m=2; }
+    public void LDAHLD() { r.a=mMU.rb((r.h<<8)+r.l); r.l=(r.l-1)&0xFF; if(r.l==0xFF) r.h=(r.h-1)&0xFF; r.m=2; }
+
+    public void LDAIOn() { r.a=mMU.rb(0xFF00+mMU.rb(r.pc)); r.pc++; r.m=3; }
+    public void LDIOnA() { mMU.wb(0xFF00+mMU.rb(r.pc), (byte)r.a); r.pc++; r.m=3; }
+    public void LDAIOC() { r.a=mMU.rb(0xFF00+r.c); r.m=2; }
+    public void LDIOCA() { mMU.wb(0xFF00+r.c, (byte)r.a); r.m=2; }
+
+    public void LDHLSPn() { int i=mMU.rb(r.pc); if(i>127) i=-((~i+1)&0xFF); r.pc++; i+=r.sp; r.h=(i>>8)&0xFF; r.l=i&0xFF; r.m=3; }
+
+    public void SWAPr_b() { var tr=r.b; r.b=((tr&0xF)<<4)|((tr&0xF0)>>4); r.f=(r.b>0)?0:0x80; r.m=1; }
+    public void SWAPr_c() { var tr=r.c; r.c=((tr&0xF)<<4)|((tr&0xF0)>>4); r.f=(r.c>0)?0:0x80; r.m=1; }
+    public void SWAPr_d() { var tr=r.d; r.d=((tr&0xF)<<4)|((tr&0xF0)>>4); r.f=(r.d>0)?0:0x80; r.m=1; }
+    public void SWAPr_e() { var tr=r.e; r.e=((tr&0xF)<<4)|((tr&0xF0)>>4); r.f=(r.e>0)?0:0x80; r.m=1; }
+    public void SWAPr_h() { var tr=r.h; r.h=((tr&0xF)<<4)|((tr&0xF0)>>4); r.f=(r.h>0)?0:0x80; r.m=1; }
+    public void SWAPr_l() { var tr=r.l; r.l=((tr&0xF)<<4)|((tr&0xF0)>>4); r.f=(r.l>0)?0:0x80; r.m=1; }
+    public void SWAPr_a() { var tr=r.a; r.a=((tr&0xF)<<4)|((tr&0xF0)>>4); r.f=(r.a>0)?0:0x80; r.m=1; }
+
+    /*--- Data processing ---*/
+    public void ADDr_b() { var a=r.a; r.a+=r.b; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.b^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADDr_c() { var a=r.a; r.a+=r.c; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.c^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADDr_d() { var a=r.a; r.a+=r.d; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.d^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADDr_e() { var a=r.a; r.a+=r.e; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.e^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADDr_h() { var a=r.a; r.a+=r.h; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.h^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADDr_l() { var a=r.a; r.a+=r.l; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.l^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADDr_a() { var a=r.a; r.a+=r.a; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.a^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADDHL() { var a=r.a; var m=mMU.rb((r.h<<8)+r.l); r.a+=m; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^a^m)&0x10)>0) r.f|=0x20; r.m=2; }
+    public void ADDn() { var a=r.a; var m=mMU.rb(r.pc); r.a+=m; r.pc++; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^a^m)&0x10)>0) r.f|=0x20; r.m=2; }
+    public void ADDHLBC() { var hl=(r.h<<8)+r.l; hl+=(r.b<<8)+r.c; if(hl>65535) r.f|=0x10; else r.f&=0xEF; r.h=(hl>>8)&0xFF; r.l=hl&0xFF; r.m=3; }
+    public void ADDHLDE() { var hl=(r.h<<8)+r.l; hl+=(r.d<<8)+r.e; if(hl>65535) r.f|=0x10; else r.f&=0xEF; r.h=(hl>>8)&0xFF; r.l=hl&0xFF; r.m=3; }
+    public void ADDHLHL() { var hl=(r.h<<8)+r.l; hl+=(r.h<<8)+r.l; if(hl>65535) r.f|=0x10; else r.f&=0xEF; r.h=(hl>>8)&0xFF; r.l=hl&0xFF; r.m=3; }
+    public void ADDHLSP() { var hl=(r.h<<8)+r.l; hl+=r.sp; if(hl>65535) r.f|=0x10; else r.f&=0xEF; r.h=(hl>>8)&0xFF; r.l=hl&0xFF; r.m=3; }
+    public void ADDSPn() { int i=mMU.rb(r.pc); if(i>127) i=-((~i+1)&0xFF); r.pc++; r.sp+=i; r.m=4; }
+
+    public void ADCr_b() { var a=r.a; r.a+=r.b; r.a+=((r.f&0x10)>0)?1:0; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.b^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADCr_c() { var a=r.a; r.a+=r.c; r.a+=((r.f&0x10)>0)?1:0; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.c^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADCr_d() { var a=r.a; r.a+=r.d; r.a+=((r.f&0x10)>0)?1:0; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.d^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADCr_e() { var a=r.a; r.a+=r.e; r.a+=((r.f&0x10)>0)?1:0; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.e^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADCr_h() { var a=r.a; r.a+=r.h; r.a+=((r.f&0x10)>0)?1:0; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.h^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADCr_l() { var a=r.a; r.a+=r.l; r.a+=((r.f&0x10)>0)?1:0; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.l^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADCr_a() { var a=r.a; r.a+=r.a; r.a+=((r.f&0x10)>0)?1:0; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.a^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void ADCHL() { var a=r.a; var m=mMU.rb((r.h<<8)+r.l); r.a+=m; r.a+=((r.f&0x10)>0)?1:0; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^m^a)&0x10)>0) r.f|=0x20; r.m=2; }
+    public void ADCn() { var a=r.a; var m=mMU.rb(r.pc); r.a+=m; r.pc++; r.a+=((r.f&0x10)>0)?1:0; r.f=(r.a>0xFF)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^m^a)&0x10)>0) r.f|=0x20; r.m=2; }
+
+    public void SUBr_b() { var a=r.a; r.a-=r.b; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.b^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SUBr_c() { var a=r.a; r.a-=r.c; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.c^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SUBr_d() { var a=r.a; r.a-=r.d; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.d^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SUBr_e() { var a=r.a; r.a-=r.e; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.e^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SUBr_h() { var a=r.a; r.a-=r.h; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.h^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SUBr_l() { var a=r.a; r.a-=r.l; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.l^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SUBr_a() { var a=r.a; r.a-=r.a; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.a^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SUBHL() { var a=r.a; var m=mMU.rb((r.h<<8)+r.l); r.a-=m; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^m^a)&0x10)>0) r.f|=0x20; r.m=2; }
+    public void SUBn() { var a=r.a; var m=mMU.rb(r.pc); r.a-=m; r.pc++; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^m^a)&0x10)>0) r.f|=0x20; r.m=2; }
+
+    public void SBCr_b() { var a=r.a; r.a-=r.b; r.a-=((r.f&0x10)>0)?1:0; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.b^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SBCr_c() { var a=r.a; r.a-=r.c; r.a-=((r.f&0x10)>0)?1:0; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.c^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SBCr_d() { var a=r.a; r.a-=r.d; r.a-=((r.f&0x10)>0)?1:0; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.d^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SBCr_e() { var a=r.a; r.a-=r.e; r.a-=((r.f&0x10)>0)?1:0; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.e^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SBCr_h() { var a=r.a; r.a-=r.h; r.a-=((r.f&0x10)>0)?1:0; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.h^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SBCr_l() { var a=r.a; r.a-=r.l; r.a-=((r.f&0x10)>0)?1:0; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.l^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SBCr_a() { var a=r.a; r.a-=r.a; r.a-=((r.f&0x10)>0)?1:0; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^r.a^a)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void SBCHL() { var a=r.a; var m=mMU.rb((r.h<<8)+r.l); r.a-=m; r.a-=((r.f&0x10)>0)?1:0; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^m^a)&0x10)>0) r.f|=0x20; r.m=2; }
+    public void SBCn() { var a=r.a; var m=mMU.rb(r.pc); r.a-=m; r.pc++; r.a-=((r.f&0x10)>0)?1:0; r.f=(r.a<0)?0x50:0x40; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; if(((r.a^m^a)&0x10)>0) r.f|=0x20; r.m=2; }
+
+    public void CPr_b() { int i=r.a; i-=r.b; r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) r.f|=0x80; if(((r.a^r.b^i)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void CPr_c() { int i=r.a; i-=r.c; r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) r.f|=0x80; if(((r.a^r.c^i)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void CPr_d() { int i=r.a; i-=r.d; r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) r.f|=0x80; if(((r.a^r.d^i)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void CPr_e() { int i=r.a; i-=r.e; r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) r.f|=0x80; if(((r.a^r.e^i)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void CPr_h() { int i=r.a; i-=r.h; r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) r.f|=0x80; if(((r.a^r.h^i)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void CPr_l() { int i=r.a; i-=r.l; r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) r.f|=0x80; if(((r.a^r.l^i)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void CPr_a() { int i=r.a; i-=r.a; r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) r.f|=0x80; if(((r.a^r.a^i)&0x10)>0) r.f|=0x20; r.m=1; }
+    public void CPHL() { int i=r.a; var m=mMU.rb((r.h<<8)+r.l); i-=m; r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) r.f|=0x80; if(((r.a^i^m)&0x10)>0) r.f|=0x20; r.m=2; }
+    public void CPn() { int i=r.a; var m=mMU.rb(r.pc); i-=m; r.pc++; r.f=(i<0)?0x50:0x40; i&=0xFF; if(!(i>0)) r.f|=0x80; if(((r.a^i^m)&0x10)>0) r.f|=0x20; r.m=2; }
+
+    public void DAA() { var a=r.a; if((r.f&0x20)>0||((r.a&15)>9)) r.a+=6; r.f&=0xEF; if(((r.f&0x20) > 0)||(a>0x99)) { r.a+=0x60; r.f|=0x10; } r.m=1; }
+
+    public void ANDr_b() { r.a&=r.b; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ANDr_c() { r.a&=r.c; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ANDr_d() { r.a&=r.d; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ANDr_e() { r.a&=r.e; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ANDr_h() { r.a&=r.h; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ANDr_l() { r.a&=r.l; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ANDr_a() { r.a&=r.a; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ANDHL() { r.a&=mMU.rb((r.h<<8)+r.l); r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=2; }
+    public void ANDn() { r.a&=mMU.rb(r.pc); r.pc++; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=2; }
+
+    public void ORr_b() { r.a|=r.b; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ORr_c() { r.a|=r.c; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ORr_d() { r.a|=r.d; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ORr_e() { r.a|=r.e; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ORr_h() { r.a|=r.h; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ORr_l() { r.a|=r.l; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ORr_a() { r.a|=r.a; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void ORHL() { r.a|=mMU.rb((r.h<<8)+r.l); r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=2; }
+    public void ORn() { r.a|=mMU.rb(r.pc); r.pc++; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=2; }
+
+    public void XORr_b() { r.a^=r.b; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void XORr_c() { r.a^=r.c; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void XORr_d() { r.a^=r.d; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void XORr_e() { r.a^=r.e; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void XORr_h() { r.a^=r.h; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void XORr_l() { r.a^=r.l; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void XORr_a() { r.a^=r.a; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void XORHL() { r.a^=mMU.rb((r.h<<8)+r.l); r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=2; }
+    public void XORn() { r.a^=mMU.rb(r.pc); r.pc++; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=2; }
+
+    public void INCr_b() { r.b++; r.b&=0xFF; r.f=(r.b>0)?0:0x80; r.m=1; }
+    public void INCr_c() { r.c++; r.c&=0xFF; r.f=(r.c>0)?0:0x80; r.m=1; }
+    public void INCr_d() { r.d++; r.d&=0xFF; r.f=(r.d>0)?0:0x80; r.m=1; }
+    public void INCr_e() { r.e++; r.e&=0xFF; r.f=(r.e>0)?0:0x80; r.m=1; }
+    public void INCr_h() { r.h++; r.h&=0xFF; r.f=(r.h>0)?0:0x80; r.m=1; }
+    public void INCr_l() { r.l++; r.l&=0xFF; r.f=(r.l>0)?0:0x80; r.m=1; }
+    public void INCr_a() { r.a++; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void INCHLm() { int i=mMU.rb((r.h<<8)+r.l)+1; i&=0xFF; mMU.wb((r.h<<8)+r.l,(byte)i); r.f=(i>0)?0:0x80; r.m=3; }
+
+    public void DECr_b() { r.b--; r.b&=0xFF; r.f=(r.b>0)?0:0x80; r.m=1; }
+    public void DECr_c() { r.c--; r.c&=0xFF; r.f=(r.c>0)?0:0x80; r.m=1; }
+    public void DECr_d() { r.d--; r.d&=0xFF; r.f=(r.d>0)?0:0x80; r.m=1; }
+    public void DECr_e() { r.e--; r.e&=0xFF; r.f=(r.e>0)?0:0x80; r.m=1; }
+    public void DECr_h() { r.h--; r.h&=0xFF; r.f=(r.h>0)?0:0x80; r.m=1; }
+    public void DECr_l() { r.l--; r.l&=0xFF; r.f=(r.l>0)?0:0x80; r.m=1; }
+    public void DECr_a() { r.a--; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void DECHLm() { int i=mMU.rb((r.h<<8)+r.l)-1; i&=0xFF; mMU.wb((r.h<<8)+r.l,(byte)i); r.f=(i>0)?0:0x80; r.m=3; }
+
+    public void INCBC() { r.c=(r.c+1)&0xFF; if(!(r.c>0)) r.b=(r.b+1)&0xFF; r.m=1; }
+    public void INCDE() { r.e=(r.e+1)&0xFF; if(!(r.e>0)) r.d=(r.d+1)&0xFF; r.m=1; }
+    public void INCHL() { r.l=(r.l+1)&0xFF; if(!(r.l>0)) r.h=(r.h+1)&0xFF; r.m=1; }
+    public void INCSP() { r.sp=(r.sp+1)&65535; r.m=1; }
+
+    public void DECBC() { r.c=(r.c-1)&0xFF; if(r.c==0xFF) r.b=(r.b-1)&0xFF; r.m=1; }
+    public void DECDE() { r.e=(r.e-1)&0xFF; if(r.e==0xFF) r.d=(r.d-1)&0xFF; r.m=1; }
+    public void DECHL() { r.l=(r.l-1)&0xFF; if(r.l==0xFF) r.h=(r.h-1)&0xFF; r.m=1; }
+    public void DECSP() { r.sp=(r.sp-1)&65535; r.m=1; }
+
+    /*--- Bit manipulation ---*/
+    public void BIT0b() { r.f&=0x1F; r.f|=0x20; r.f=((r.b&0x01)>0)?0:0x80; r.m=2; }
+    public void BIT0c() { r.f&=0x1F; r.f|=0x20; r.f=((r.c&0x01)>0)?0:0x80; r.m=2; }
+    public void BIT0d() { r.f&=0x1F; r.f|=0x20; r.f=((r.d&0x01)>0)?0:0x80; r.m=2; }
+    public void BIT0e() { r.f&=0x1F; r.f|=0x20; r.f=((r.e&0x01)>0)?0:0x80; r.m=2; }
+    public void BIT0h() { r.f&=0x1F; r.f|=0x20; r.f=((r.h&0x01)>0)?0:0x80; r.m=2; }
+    public void BIT0l() { r.f&=0x1F; r.f|=0x20; r.f=((r.l&0x01)>0)?0:0x80; r.m=2; }
+    public void BIT0a() { r.f&=0x1F; r.f|=0x20; r.f=((r.a&0x01)>0)?0:0x80; r.m=2; }
+    public void BIT0m() { r.f&=0x1F; r.f|=0x20; r.f=((mMU.rb((r.h<<8)+r.l)&0x01)>0)?0:0x80; r.m=3; }
+
+    public void RES0b() { r.b&=0xFE; r.m=2; }
+    public void RES0c() { r.c&=0xFE; r.m=2; }
+    public void RES0d() { r.d&=0xFE; r.m=2; }
+    public void RES0e() { r.e&=0xFE; r.m=2; }
+    public void RES0h() { r.h&=0xFE; r.m=2; }
+    public void RES0l() { r.l&=0xFE; r.m=2; }
+    public void RES0a() { r.a&=0xFE; r.m=2; }
+    public void RES0m() { int i=mMU.rb((r.h<<8)+r.l); i&=0xFE; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void SET0b() { r.b|=0x01; r.m=2; }
+    public void SET0c() { r.b|=0x01; r.m=2; }
+    public void SET0d() { r.b|=0x01; r.m=2; }
+    public void SET0e() { r.b|=0x01; r.m=2; }
+    public void SET0h() { r.b|=0x01; r.m=2; }
+    public void SET0l() { r.b|=0x01; r.m=2; }
+    public void SET0a() { r.b|=0x01; r.m=2; }
+    public void SET0m() { int i=mMU.rb((r.h<<8)+r.l); i|=0x01; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void BIT1b() { r.f&=0x1F; r.f|=0x20; r.f=((r.b&0x02)>0)?0:0x80; r.m=2; }
+    public void BIT1c() { r.f&=0x1F; r.f|=0x20; r.f=((r.c&0x02)>0)?0:0x80; r.m=2; }
+    public void BIT1d() { r.f&=0x1F; r.f|=0x20; r.f=((r.d&0x02)>0)?0:0x80; r.m=2; }
+    public void BIT1e() { r.f&=0x1F; r.f|=0x20; r.f=((r.e&0x02)>0)?0:0x80; r.m=2; }
+    public void BIT1h() { r.f&=0x1F; r.f|=0x20; r.f=((r.h&0x02)>0)?0:0x80; r.m=2; }
+    public void BIT1l() { r.f&=0x1F; r.f|=0x20; r.f=((r.l&0x02)>0)?0:0x80; r.m=2; }
+    public void BIT1a() { r.f&=0x1F; r.f|=0x20; r.f=((r.a&0x02)>0)?0:0x80; r.m=2; }
+    public void BIT1m() { r.f&=0x1F; r.f|=0x20; r.f=((mMU.rb((r.h<<8)+r.l)&0x02)>0)?0:0x80; r.m=3; }
+
+    public void RES1b() { r.b&=0xFD; r.m=2; }
+    public void RES1c() { r.c&=0xFD; r.m=2; }
+    public void RES1d() { r.d&=0xFD; r.m=2; }
+    public void RES1e() { r.e&=0xFD; r.m=2; }
+    public void RES1h() { r.h&=0xFD; r.m=2; }
+    public void RES1l() { r.l&=0xFD; r.m=2; }
+    public void RES1a() { r.a&=0xFD; r.m=2; }
+    public void RES1m() { int i=mMU.rb((r.h<<8)+r.l); i&=0xFD; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void SET1b() { r.b|=0x02; r.m=2; }
+    public void SET1c() { r.b|=0x02; r.m=2; }
+    public void SET1d() { r.b|=0x02; r.m=2; }
+    public void SET1e() { r.b|=0x02; r.m=2; }
+    public void SET1h() { r.b|=0x02; r.m=2; }
+    public void SET1l() { r.b|=0x02; r.m=2; }
+    public void SET1a() { r.b|=0x02; r.m=2; }
+    public void SET1m() { int i=mMU.rb((r.h<<8)+r.l); i|=0x02; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void BIT2b() { r.f&=0x1F; r.f|=0x20; r.f=((r.b&0x04)>0)?0:0x80; r.m=2; }
+    public void BIT2c() { r.f&=0x1F; r.f|=0x20; r.f=((r.c&0x04)>0)?0:0x80; r.m=2; }
+    public void BIT2d() { r.f&=0x1F; r.f|=0x20; r.f=((r.d&0x04)>0)?0:0x80; r.m=2; }
+    public void BIT2e() { r.f&=0x1F; r.f|=0x20; r.f=((r.e&0x04)>0)?0:0x80; r.m=2; }
+    public void BIT2h() { r.f&=0x1F; r.f|=0x20; r.f=((r.h&0x04)>0)?0:0x80; r.m=2; }
+    public void BIT2l() { r.f&=0x1F; r.f|=0x20; r.f=((r.l&0x04)>0)?0:0x80; r.m=2; }
+    public void BIT2a() { r.f&=0x1F; r.f|=0x20; r.f=((r.a&0x04)>0)?0:0x80; r.m=2; }
+    public void BIT2m() { r.f&=0x1F; r.f|=0x20; r.f=((mMU.rb((r.h<<8)+r.l)&0x04)>0)?0:0x80; r.m=3; }
+
+    public void RES2b() { r.b&=0xFB; r.m=2; }
+    public void RES2c() { r.c&=0xFB; r.m=2; }
+    public void RES2d() { r.d&=0xFB; r.m=2; }
+    public void RES2e() { r.e&=0xFB; r.m=2; }
+    public void RES2h() { r.h&=0xFB; r.m=2; }
+    public void RES2l() { r.l&=0xFB; r.m=2; }
+    public void RES2a() { r.a&=0xFB; r.m=2; }
+    public void RES2m() { int i=mMU.rb((r.h<<8)+r.l); i&=0xFB; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void SET2b() { r.b|=0x04; r.m=2; }
+    public void SET2c() { r.b|=0x04; r.m=2; }
+    public void SET2d() { r.b|=0x04; r.m=2; }
+    public void SET2e() { r.b|=0x04; r.m=2; }
+    public void SET2h() { r.b|=0x04; r.m=2; }
+    public void SET2l() { r.b|=0x04; r.m=2; }
+    public void SET2a() { r.b|=0x04; r.m=2; }
+    public void SET2m() { int i=mMU.rb((r.h<<8)+r.l); i|=0x04; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void BIT3b() { r.f&=0x1F; r.f|=0x20; r.f=((r.b&0x08)>0)?0:0x80; r.m=2; }
+    public void BIT3c() { r.f&=0x1F; r.f|=0x20; r.f=((r.c&0x08)>0)?0:0x80; r.m=2; }
+    public void BIT3d() { r.f&=0x1F; r.f|=0x20; r.f=((r.d&0x08)>0)?0:0x80; r.m=2; }
+    public void BIT3e() { r.f&=0x1F; r.f|=0x20; r.f=((r.e&0x08)>0)?0:0x80; r.m=2; }
+    public void BIT3h() { r.f&=0x1F; r.f|=0x20; r.f=((r.h&0x08)>0)?0:0x80; r.m=2; }
+    public void BIT3l() { r.f&=0x1F; r.f|=0x20; r.f=((r.l&0x08)>0)?0:0x80; r.m=2; }
+    public void BIT3a() { r.f&=0x1F; r.f|=0x20; r.f=((r.a&0x08)>0)?0:0x80; r.m=2; }
+    public void BIT3m() { r.f&=0x1F; r.f|=0x20; r.f=((mMU.rb((r.h<<8)+r.l)&0x08)>0)?0:0x80; r.m=3; }
+
+    public void RES3b() { r.b&=0xF7; r.m=2; }
+    public void RES3c() { r.c&=0xF7; r.m=2; }
+    public void RES3d() { r.d&=0xF7; r.m=2; }
+    public void RES3e() { r.e&=0xF7; r.m=2; }
+    public void RES3h() { r.h&=0xF7; r.m=2; }
+    public void RES3l() { r.l&=0xF7; r.m=2; }
+    public void RES3a() { r.a&=0xF7; r.m=2; }
+    public void RES3m() { int i=mMU.rb((r.h<<8)+r.l); i&=0xF7; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void SET3b() { r.b|=0x08; r.m=2; }
+    public void SET3c() { r.b|=0x08; r.m=2; }
+    public void SET3d() { r.b|=0x08; r.m=2; }
+    public void SET3e() { r.b|=0x08; r.m=2; }
+    public void SET3h() { r.b|=0x08; r.m=2; }
+    public void SET3l() { r.b|=0x08; r.m=2; }
+    public void SET3a() { r.b|=0x08; r.m=2; }
+    public void SET3m() { int i=mMU.rb((r.h<<8)+r.l); i|=0x08; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void BIT4b() { r.f&=0x1F; r.f|=0x20; r.f=((r.b&0x10)>0)?0:0x80; r.m=2; }
+    public void BIT4c() { r.f&=0x1F; r.f|=0x20; r.f=((r.c&0x10)>0)?0:0x80; r.m=2; }
+    public void BIT4d() { r.f&=0x1F; r.f|=0x20; r.f=((r.d&0x10)>0)?0:0x80; r.m=2; }
+    public void BIT4e() { r.f&=0x1F; r.f|=0x20; r.f=((r.e&0x10)>0)?0:0x80; r.m=2; }
+    public void BIT4h() { r.f&=0x1F; r.f|=0x20; r.f=((r.h&0x10)>0)?0:0x80; r.m=2; }
+    public void BIT4l() { r.f&=0x1F; r.f|=0x20; r.f=((r.l&0x10)>0)?0:0x80; r.m=2; }
+    public void BIT4a() { r.f&=0x1F; r.f|=0x20; r.f=((r.a&0x10)>0)?0:0x80; r.m=2; }
+    public void BIT4m() { r.f&=0x1F; r.f|=0x20; r.f=((mMU.rb((r.h<<8)+r.l)&0x10)>0)?0:0x80; r.m=3; }
+
+    public void RES4b() { r.b&=0xEF; r.m=2; }
+    public void RES4c() { r.c&=0xEF; r.m=2; }
+    public void RES4d() { r.d&=0xEF; r.m=2; }
+    public void RES4e() { r.e&=0xEF; r.m=2; }
+    public void RES4h() { r.h&=0xEF; r.m=2; }
+    public void RES4l() { r.l&=0xEF; r.m=2; }
+    public void RES4a() { r.a&=0xEF; r.m=2; }
+    public void RES4m() { int i=mMU.rb((r.h<<8)+r.l); i&=0xEF; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void SET4b() { r.b|=0x10; r.m=2; }
+    public void SET4c() { r.b|=0x10; r.m=2; }
+    public void SET4d() { r.b|=0x10; r.m=2; }
+    public void SET4e() { r.b|=0x10; r.m=2; }
+    public void SET4h() { r.b|=0x10; r.m=2; }
+    public void SET4l() { r.b|=0x10; r.m=2; }
+    public void SET4a() { r.b|=0x10; r.m=2; }
+    public void SET4m() { int i=mMU.rb((r.h<<8)+r.l); i|=0x10; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void BIT5b() { r.f&=0x1F; r.f|=0x20; r.f=((r.b&0x20)>0)?0:0x80; r.m=2; }
+    public void BIT5c() { r.f&=0x1F; r.f|=0x20; r.f=((r.c&0x20)>0)?0:0x80; r.m=2; }
+    public void BIT5d() { r.f&=0x1F; r.f|=0x20; r.f=((r.d&0x20)>0)?0:0x80; r.m=2; }
+    public void BIT5e() { r.f&=0x1F; r.f|=0x20; r.f=((r.e&0x20)>0)?0:0x80; r.m=2; }
+    public void BIT5h() { r.f&=0x1F; r.f|=0x20; r.f=((r.h&0x20)>0)?0:0x80; r.m=2; }
+    public void BIT5l() { r.f&=0x1F; r.f|=0x20; r.f=((r.l&0x20)>0)?0:0x80; r.m=2; }
+    public void BIT5a() { r.f&=0x1F; r.f|=0x20; r.f=((r.a&0x20)>0)?0:0x80; r.m=2; }
+    public void BIT5m() { r.f&=0x1F; r.f|=0x20; r.f=((mMU.rb((r.h<<8)+r.l)&0x20)>0)?0:0x80; r.m=3; }
+
+    public void RES5b() { r.b&=0xDF; r.m=2; }
+    public void RES5c() { r.c&=0xDF; r.m=2; }
+    public void RES5d() { r.d&=0xDF; r.m=2; }
+    public void RES5e() { r.e&=0xDF; r.m=2; }
+    public void RES5h() { r.h&=0xDF; r.m=2; }
+    public void RES5l() { r.l&=0xDF; r.m=2; }
+    public void RES5a() { r.a&=0xDF; r.m=2; }
+    public void RES5m() { int i=mMU.rb((r.h<<8)+r.l); i&=0xDF; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void SET5b() { r.b|=0x20; r.m=2; }
+    public void SET5c() { r.b|=0x20; r.m=2; }
+    public void SET5d() { r.b|=0x20; r.m=2; }
+    public void SET5e() { r.b|=0x20; r.m=2; }
+    public void SET5h() { r.b|=0x20; r.m=2; }
+    public void SET5l() { r.b|=0x20; r.m=2; }
+    public void SET5a() { r.b|=0x20; r.m=2; }
+    public void SET5m() { int i=mMU.rb((r.h<<8)+r.l); i|=0x20; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void BIT6b() { r.f&=0x1F; r.f|=0x20; r.f=((r.b&0x40)>0)?0:0x80; r.m=2; }
+    public void BIT6c() { r.f&=0x1F; r.f|=0x20; r.f=((r.c&0x40)>0)?0:0x80; r.m=2; }
+    public void BIT6d() { r.f&=0x1F; r.f|=0x20; r.f=((r.d&0x40)>0)?0:0x80; r.m=2; }
+    public void BIT6e() { r.f&=0x1F; r.f|=0x20; r.f=((r.e&0x40)>0)?0:0x80; r.m=2; }
+    public void BIT6h() { r.f&=0x1F; r.f|=0x20; r.f=((r.h&0x40)>0)?0:0x80; r.m=2; }
+    public void BIT6l() { r.f&=0x1F; r.f|=0x20; r.f=((r.l&0x40)>0)?0:0x80; r.m=2; }
+    public void BIT6a() { r.f&=0x1F; r.f|=0x20; r.f=((r.a&0x40)>0)?0:0x80; r.m=2; }
+    public void BIT6m() { r.f&=0x1F; r.f|=0x20; r.f=((mMU.rb((r.h<<8)+r.l)&0x40)>0)?0:0x80; r.m=3; }
+
+    public void RES6b() { r.b&=0xBF; r.m=2; }
+    public void RES6c() { r.c&=0xBF; r.m=2; }
+    public void RES6d() { r.d&=0xBF; r.m=2; }
+    public void RES6e() { r.e&=0xBF; r.m=2; }
+    public void RES6h() { r.h&=0xBF; r.m=2; }
+    public void RES6l() { r.l&=0xBF; r.m=2; }
+    public void RES6a() { r.a&=0xBF; r.m=2; }
+    public void RES6m() { int i=mMU.rb((r.h<<8)+r.l); i&=0xBF; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void SET6b() { r.b|=0x40; r.m=2; }
+    public void SET6c() { r.b|=0x40; r.m=2; }
+    public void SET6d() { r.b|=0x40; r.m=2; }
+    public void SET6e() { r.b|=0x40; r.m=2; }
+    public void SET6h() { r.b|=0x40; r.m=2; }
+    public void SET6l() { r.b|=0x40; r.m=2; }
+    public void SET6a() { r.b|=0x40; r.m=2; }
+    public void SET6m() { int i=mMU.rb((r.h<<8)+r.l); i|=0x40; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void BIT7b() { r.f&=0x1F; r.f|=0x20; r.f=((r.b&0x80)>0)?0:0x80; r.m=2; }
+    public void BIT7c() { r.f&=0x1F; r.f|=0x20; r.f=((r.c&0x80)>0)?0:0x80; r.m=2; }
+    public void BIT7d() { r.f&=0x1F; r.f|=0x20; r.f=((r.d&0x80)>0)?0:0x80; r.m=2; }
+    public void BIT7e() { r.f&=0x1F; r.f|=0x20; r.f=((r.e&0x80)>0)?0:0x80; r.m=2; }
+    public void BIT7h() { r.f&=0x1F; r.f|=0x20; r.f=((r.h&0x80)>0)?0:0x80; r.m=2; }
+    public void BIT7l() { r.f&=0x1F; r.f|=0x20; r.f=((r.l&0x80)>0)?0:0x80; r.m=2; }
+    public void BIT7a() { r.f&=0x1F; r.f|=0x20; r.f=((r.a&0x80)>0)?0:0x80; r.m=2; }
+    public void BIT7m() { r.f&=0x1F; r.f|=0x20; r.f=((mMU.rb((r.h<<8)+r.l)&0x80)>0)?0:0x80; r.m=3; }
+
+    public void RES7b() { r.b&=0x7F; r.m=2; }
+    public void RES7c() { r.c&=0x7F; r.m=2; }
+    public void RES7d() { r.d&=0x7F; r.m=2; }
+    public void RES7e() { r.e&=0x7F; r.m=2; }
+    public void RES7h() { r.h&=0x7F; r.m=2; }
+    public void RES7l() { r.l&=0x7F; r.m=2; }
+    public void RES7a() { r.a&=0x7F; r.m=2; }
+    public void RES7m() { int i=mMU.rb((r.h<<8)+r.l); i&=0x7F; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void SET7b() { r.b|=0x80; r.m=2; }
+    public void SET7c() { r.b|=0x80; r.m=2; }
+    public void SET7d() { r.b|=0x80; r.m=2; }
+    public void SET7e() { r.b|=0x80; r.m=2; }
+    public void SET7h() { r.b|=0x80; r.m=2; }
+    public void SET7l() { r.b|=0x80; r.m=2; }
+    public void SET7a() { r.b|=0x80; r.m=2; }
+    public void SET7m() { int i=mMU.rb((r.h<<8)+r.l); i|=0x80; mMU.wb((r.h<<8)+r.l,(byte)i); r.m=4; }
+
+    public void RLA() { var ci=((r.f&0x10)>0)?1:0; var co=((r.a&0x80)>0)?0x10:0; r.a=(r.a<<1)+ci; r.a&=0xFF; r.f=(r.f&0xEF)+co; r.m=1; }
+    public void RLCA() { var ci=((r.a&0x80)>0)?1:0; var co=((r.a&0x80)>0)?0x10:0; r.a=(r.a<<1)+ci; r.a&=0xFF; r.f=(r.f&0xEF)+co; r.m=1; }
+    public void RRA() { var ci=((r.f&0x10)>0)?0x80:0; var co=((r.a&1)>0)?0x10:0; r.a=(r.a>>1)+ci; r.a&=0xFF; r.f=(r.f&0xEF)+co; r.m=1; }
+    public void RRCA() { var ci=((r.a&1)>0)?0x80:0; var co=((r.a&1)>0)?0x10:0; r.a=(r.a>>1)+ci; r.a&=0xFF; r.f=(r.f&0xEF)+co; r.m=1; }
+
+    public void RLr_b() { var ci=((r.f&0x10)>0)?1:0; var co=((r.b&0x80)>0)?0x10:0; r.b=(r.b<<1)+ci; r.b&=0xFF; r.f=(r.b>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLr_c() { var ci=((r.f&0x10)>0)?1:0; var co=((r.c&0x80)>0)?0x10:0; r.c=(r.c<<1)+ci; r.c&=0xFF; r.f=(r.c>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLr_d() { var ci=((r.f&0x10)>0)?1:0; var co=((r.d&0x80)>0)?0x10:0; r.d=(r.d<<1)+ci; r.d&=0xFF; r.f=(r.d>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLr_e() { var ci=((r.f&0x10)>0)?1:0; var co=((r.e&0x80)>0)?0x10:0; r.e=(r.e<<1)+ci; r.e&=0xFF; r.f=(r.e>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLr_h() { var ci=((r.f&0x10)>0)?1:0; var co=((r.h&0x80)>0)?0x10:0; r.h=(r.h<<1)+ci; r.h&=0xFF; r.f=(r.h>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLr_l() { var ci=((r.f&0x10)>0)?1:0; var co=((r.l&0x80)>0)?0x10:0; r.l=(r.l<<1)+ci; r.l&=0xFF; r.f=(r.l>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLr_a() { var ci=((r.f&0x10)>0)?1:0; var co=((r.a&0x80)>0)?0x10:0; r.a=(r.a<<1)+ci; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLHL() { int i=mMU.rb((r.h<<8)+r.l); var ci=((r.f&0x10)>0)?1:0; var co=((i&0x80)>0)?0x10:0; i=(i<<1)+ci; i&=0xFF; r.f=(i>0)?0:0x80; mMU.wb((r.h<<8)+r.l,(byte)i); r.f=(r.f&0xEF)+co; r.m=4; }
+
+    public void RLCr_b() { var ci=((r.b&0x80)>0)?1:0; var co=((r.b&0x80)>0)?0x10:0; r.b=(r.b<<1)+ci; r.b&=0xFF; r.f=(r.b>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLCr_c() { var ci=((r.c&0x80)>0)?1:0; var co=((r.c&0x80)>0)?0x10:0; r.c=(r.c<<1)+ci; r.c&=0xFF; r.f=(r.c>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLCr_d() { var ci=((r.d&0x80)>0)?1:0; var co=((r.d&0x80)>0)?0x10:0; r.d=(r.d<<1)+ci; r.d&=0xFF; r.f=(r.d>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLCr_e() { var ci=((r.e&0x80)>0)?1:0; var co=((r.e&0x80)>0)?0x10:0; r.e=(r.e<<1)+ci; r.e&=0xFF; r.f=(r.e>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLCr_h() { var ci=((r.h&0x80)>0)?1:0; var co=((r.h&0x80)>0)?0x10:0; r.h=(r.h<<1)+ci; r.h&=0xFF; r.f=(r.h>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLCr_l() { var ci=((r.l&0x80)>0)?1:0; var co=((r.l&0x80)>0)?0x10:0; r.l=(r.l<<1)+ci; r.l&=0xFF; r.f=(r.l>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLCr_a() { var ci=((r.a&0x80)>0)?1:0; var co=((r.a&0x80)>0)?0x10:0; r.a=(r.a<<1)+ci; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RLCHL() { int i=mMU.rb((r.h<<8)+r.l); var ci=((i&0x80)>0)?1:0; var co=((i&0x80)>0)?0x10:0; i=(i<<1)+ci; i&=0xFF; r.f=(i>0)?0:0x80; mMU.wb((r.h<<8)+r.l,(byte)i); r.f=(r.f&0xEF)+co; r.m=4; }
+
+    public void RRr_b() { var ci=((r.f&0x10)>0)?0x80:0; var co=((r.b&1)>0)?0x10:0; r.b=(r.b>>1)+ci; r.b&=0xFF; r.f=(r.b>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRr_c() { var ci=((r.f&0x10)>0)?0x80:0; var co=((r.c&1)>0)?0x10:0; r.c=(r.c>>1)+ci; r.c&=0xFF; r.f=(r.c>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRr_d() { var ci=((r.f&0x10)>0)?0x80:0; var co=((r.d&1)>0)?0x10:0; r.d=(r.d>>1)+ci; r.d&=0xFF; r.f=(r.d>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRr_e() { var ci=((r.f&0x10)>0)?0x80:0; var co=((r.e&1)>0)?0x10:0; r.e=(r.e>>1)+ci; r.e&=0xFF; r.f=(r.e>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRr_h() { var ci=((r.f&0x10)>0)?0x80:0; var co=((r.h&1)>0)?0x10:0; r.h=(r.h>>1)+ci; r.h&=0xFF; r.f=(r.h>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRr_l() { var ci=((r.f&0x10)>0)?0x80:0; var co=((r.l&1)>0)?0x10:0; r.l=(r.l>>1)+ci; r.l&=0xFF; r.f=(r.l>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRr_a() { var ci=((r.f&0x10)>0)?0x80:0; var co=((r.a&1)>0)?0x10:0; r.a=(r.a>>1)+ci; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRHL() { int i=mMU.rb((r.h<<8)+r.l); var ci=((r.f&0x10)>0)?0x80:0; var co=((i&1)>0)?0x10:0; i=(i>>1)+ci; i&=0xFF; mMU.wb((r.h<<8)+r.l,(byte)i); r.f=(i>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=4; }
+
+    public void RRCr_b() { var ci=((r.b&1)>0)?0x80:0; var co=((r.b&1)>0)?0x10:0; r.b=(r.b>>1)+ci; r.b&=0xFF; r.f=(r.b>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRCr_c() { var ci=((r.c&1)>0)?0x80:0; var co=((r.c&1)>0)?0x10:0; r.c=(r.c>>1)+ci; r.c&=0xFF; r.f=(r.c>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRCr_d() { var ci=((r.d&1)>0)?0x80:0; var co=((r.d&1)>0)?0x10:0; r.d=(r.d>>1)+ci; r.d&=0xFF; r.f=(r.d>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRCr_e() { var ci=((r.e&1)>0)?0x80:0; var co=((r.e&1)>0)?0x10:0; r.e=(r.e>>1)+ci; r.e&=0xFF; r.f=(r.e>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRCr_h() { var ci=((r.h&1)>0)?0x80:0; var co=((r.h&1)>0)?0x10:0; r.h=(r.h>>1)+ci; r.h&=0xFF; r.f=(r.h>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRCr_l() { var ci=((r.l&1)>0)?0x80:0; var co=((r.l&1)>0)?0x10:0; r.l=(r.l>>1)+ci; r.l&=0xFF; r.f=(r.l>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRCr_a() { var ci=((r.a&1)>0)?0x80:0; var co=((r.a&1)>0)?0x10:0; r.a=(r.a>>1)+ci; r.a&=0xFF; r.f=(r.a>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void RRCHL() { int i=mMU.rb((r.h<<8)+r.l); var ci=((i&1)>0)?0x80:0; var co=((i&1)>0)?0x10:0; i=(i>>1)+ci; i&=0xFF; mMU.wb((r.h<<8)+r.l,(byte)i); r.f=(i>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=4; }
+
+    public void SLAr_b() { var co=((r.b&0x80)>0)?0x10:0; r.b=(r.b<<1)&0xFF; r.f=(r.b>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SLAr_c() { var co=((r.c&0x80)>0)?0x10:0; r.c=(r.c<<1)&0xFF; r.f=(r.c>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SLAr_d() { var co=((r.d&0x80)>0)?0x10:0; r.d=(r.d<<1)&0xFF; r.f=(r.d>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SLAr_e() { var co=((r.e&0x80)>0)?0x10:0; r.e=(r.e<<1)&0xFF; r.f=(r.e>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SLAr_h() { var co=((r.h&0x80)>0)?0x10:0; r.h=(r.h<<1)&0xFF; r.f=(r.h>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SLAr_l() { var co=((r.l&0x80)>0)?0x10:0; r.l=(r.l<<1)&0xFF; r.f=(r.l>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SLAr_a() { var co=((r.a&0x80)>0)?0x10:0; r.a=(r.a<<1)&0xFF; r.f=(r.a>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+
+    public void SLLr_b() { var co=((r.b&0x80)>0)?0x10:0; r.b=(r.b<<1)&0xFF+1; r.f=(r.b>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SLLr_c() { var co=((r.c&0x80)>0)?0x10:0; r.c=(r.c<<1)&0xFF+1; r.f=(r.c>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SLLr_d() { var co=((r.d&0x80)>0)?0x10:0; r.d=(r.d<<1)&0xFF+1; r.f=(r.d>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SLLr_e() { var co=((r.e&0x80)>0)?0x10:0; r.e=(r.e<<1)&0xFF+1; r.f=(r.e>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SLLr_h() { var co=((r.h&0x80)>0)?0x10:0; r.h=(r.h<<1)&0xFF+1; r.f=(r.h>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SLLr_l() { var co=((r.l&0x80)>0)?0x10:0; r.l=(r.l<<1)&0xFF+1; r.f=(r.l>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SLLr_a() { var co=((r.a&0x80)>0)?0x10:0; r.a=(r.a<<1)&0xFF+1; r.f=(r.a>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+
+    public void SRAr_b() { var ci=r.b&0x80; var co=((r.b&1)>0)?0x10:0; r.b=((r.b>>1)+ci)&0xFF; r.f=(r.b>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SRAr_c() { var ci=r.c&0x80; var co=((r.c&1)>0)?0x10:0; r.c=((r.c>>1)+ci)&0xFF; r.f=(r.c>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SRAr_d() { var ci=r.d&0x80; var co=((r.d&1)>0)?0x10:0; r.d=((r.d>>1)+ci)&0xFF; r.f=(r.d>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SRAr_e() { var ci=r.e&0x80; var co=((r.e&1)>0)?0x10:0; r.e=((r.e>>1)+ci)&0xFF; r.f=(r.e>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SRAr_h() { var ci=r.h&0x80; var co=((r.h&1)>0)?0x10:0; r.h=((r.h>>1)+ci)&0xFF; r.f=(r.h>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SRAr_l() { var ci=r.l&0x80; var co=((r.l&1)>0)?0x10:0; r.l=((r.l>>1)+ci)&0xFF; r.f=(r.l>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SRAr_a() { var ci=r.a&0x80; var co=((r.a&1)>0)?0x10:0; r.a=((r.a>>1)+ci)&0xFF; r.f=(r.a>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+
+    public void SRLr_b() { var co=((r.b&1)>0)?0x10:0; r.b=(r.b>>1)&0xFF; r.f=(r.b>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SRLr_c() { var co=((r.c&1)>0)?0x10:0; r.c=(r.c>>1)&0xFF; r.f=(r.c>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SRLr_d() { var co=((r.d&1)>0)?0x10:0; r.d=(r.d>>1)&0xFF; r.f=(r.d>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SRLr_e() { var co=((r.e&1)>0)?0x10:0; r.e=(r.e>>1)&0xFF; r.f=(r.e>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SRLr_h() { var co=((r.h&1)>0)?0x10:0; r.h=(r.h>>1)&0xFF; r.f=(r.h>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SRLr_l() { var co=((r.l&1)>0)?0x10:0; r.l=(r.l>>1)&0xFF; r.f=(r.l>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+    public void SRLr_a() { var co=((r.a&1)>0)?0x10:0; r.a=(r.a>>1)&0xFF; r.f=(r.a>0)?0:0x80; r.f=(r.f&0xEF)+co; r.m=2; }
+
+    public void CPL() { r.a ^= 0xFF; r.f=(r.a>0)?0:0x80; r.m=1; }
+    public void NEG() { r.a=0-r.a; r.f=(r.a<0)?0x10:0; r.a&=0xFF; if(!(r.a>0)) r.f|=0x80; r.m=2; }
+
+    public void CCF() { var ci=((r.f&0x10)>0)?0:0x10; r.f=(r.f&0xEF)+ci; r.m=1; }
+    public void SCF() { r.f|=0x10; r.m=1; }
+
+    /*--- Stack ---*/
+    public void PUSHBC() { r.sp--; mMU.wb(r.sp,(byte)r.b); r.sp--; mMU.wb(r.sp,(byte)r.c); r.m=3; }
+    public void PUSHDE() { r.sp--; mMU.wb(r.sp,(byte)r.d); r.sp--; mMU.wb(r.sp,(byte)r.e); r.m=3; }
+    public void PUSHHL() { r.sp--; mMU.wb(r.sp,(byte)r.h); r.sp--; mMU.wb(r.sp,(byte)r.l); r.m=3; }
+    public void PUSHAF() { r.sp--; mMU.wb(r.sp,(byte)r.a); r.sp--; mMU.wb(r.sp,(byte)r.f); r.m=3; }
+
+    public void POPBC() { r.c=mMU.rb(r.sp); r.sp++; r.b=mMU.rb(r.sp); r.sp++; r.m=3; }
+    public void POPDE() { r.e=mMU.rb(r.sp); r.sp++; r.d=mMU.rb(r.sp); r.sp++; r.m=3; }
+    public void POPHL() { r.l=mMU.rb(r.sp); r.sp++; r.h=mMU.rb(r.sp); r.sp++; r.m=3; }
+    public void POPAF() { r.f=mMU.rb(r.sp); r.sp++; r.a=mMU.rb(r.sp); r.sp++; r.m=3; }
+
+    /*--- Jump ---*/
+    public void JPnn() { r.pc = mMU.rw(r.pc); r.m=3; }
+    public void JPHL() { r.pc=(r.h<<8)+r.l; r.m=1; }
+    public void JPNZnn() { r.m=3; if((r.f&0x80)==0x00) { r.pc=mMU.rw(r.pc); r.m++; } else r.pc+=2; }
+    public void JPZnn()  { r.m=3; if((r.f&0x80)==0x80) { r.pc=mMU.rw(r.pc); r.m++; } else r.pc+=2; }
+    public void JPNCnn() { r.m=3; if((r.f&0x10)==0x00) { r.pc=mMU.rw(r.pc); r.m++; } else r.pc+=2; }
+    public void JPCnn()  { r.m=3; if((r.f&0x10)==0x10) { r.pc=mMU.rw(r.pc); r.m++; } else r.pc+=2; }
+
+    public void JRn() { int i=mMU.rb(r.pc); if(i>127) i=-((~i+1)&0xFF); r.pc++; r.m=2; r.pc+=i; r.m++; }
+    public void JRNZn() { int i=mMU.rb(r.pc); if(i>127) i=-((~i+1)&0xFF); r.pc++; r.m=2; if((r.f&0x80)==0x00) { r.pc+=i; r.m++; } }
+    public void JRZn()  { int i=mMU.rb(r.pc); if(i>127) i=-((~i+1)&0xFF); r.pc++; r.m=2; if((r.f&0x80)==0x80) { r.pc+=i; r.m++; } }
+    public void JRNCn() { int i=mMU.rb(r.pc); if(i>127) i=-((~i+1)&0xFF); r.pc++; r.m=2; if((r.f&0x10)==0x00) { r.pc+=i; r.m++; } }
+    public void JRCn()  { int i=mMU.rb(r.pc); if(i>127) i=-((~i+1)&0xFF); r.pc++; r.m=2; if((r.f&0x10)==0x10) { r.pc+=i; r.m++; } }
+
+    public void DJNZn() { int i=mMU.rb(r.pc); if(i>127) i=-((~i+1)&0xFF); r.pc++; r.m=2; r.b--; if(r.b>0) { r.pc+=i; r.m++; } }
+
+    public void CALLnn() { r.sp-=2; mMU.ww(r.sp,r.pc+2); r.pc=mMU.rw(r.pc); r.m=5; }
+    public void CALLNZnn() { r.m=3; if((r.f&0x80)==0x00) { r.sp-=2; mMU.ww(r.sp,r.pc+2); r.pc=mMU.rw(r.pc); r.m+=2; } else r.pc+=2; }
+    public void CALLZnn() { r.m=3; if((r.f&0x80)==0x80) { r.sp-=2; mMU.ww(r.sp,r.pc+2); r.pc=mMU.rw(r.pc); r.m+=2; } else r.pc+=2; }
+    public void CALLNCnn() { r.m=3; if((r.f&0x10)==0x00) { r.sp-=2; mMU.ww(r.sp,r.pc+2); r.pc=mMU.rw(r.pc); r.m+=2; } else r.pc+=2; }
+    public void CALLCnn() { r.m=3; if((r.f&0x10)==0x10) { r.sp-=2; mMU.ww(r.sp,r.pc+2); r.pc=mMU.rw(r.pc); r.m+=2; } else r.pc+=2; }
+
+    public void RET() { r.pc=mMU.rw(r.sp); r.sp+=2; r.m=3; }
+    public void RETI() { r.ime=1; rrs(); r.pc=mMU.rw(r.sp); r.sp+=2; r.m=3; }
+    public void RETNZ() { r.m=1; if((r.f&0x80)==0x00) { r.pc=mMU.rw(r.sp); r.sp+=2; r.m+=2; } }
+    public void RETZ() { r.m=1; if((r.f&0x80)==0x80) { r.pc=mMU.rw(r.sp); r.sp+=2; r.m+=2; } }
+    public void RETNC() { r.m=1; if((r.f&0x10)==0x00) { r.pc=mMU.rw(r.sp); r.sp+=2; r.m+=2; } }
+    public void RETC() { r.m=1; if((r.f&0x10)==0x10) { r.pc=mMU.rw(r.sp); r.sp+=2; r.m+=2; } }
+
+    public void RST00() { rsv(); r.sp-=2; mMU.ww(r.sp,r.pc); r.pc=0x00; r.m=3; }
+    public void RST08() { rsv(); r.sp-=2; mMU.ww(r.sp,r.pc); r.pc=0x08; r.m=3; }
+    public void RST10() { rsv(); r.sp-=2; mMU.ww(r.sp,r.pc); r.pc=0x10; r.m=3; }
+    public void RST18() { rsv(); r.sp-=2; mMU.ww(r.sp,r.pc); r.pc=0x18; r.m=3; }
+    public void RST20() { rsv(); r.sp-=2; mMU.ww(r.sp,r.pc); r.pc=0x20; r.m=3; }
+    public void RST28() { rsv(); r.sp-=2; mMU.ww(r.sp,r.pc); r.pc=0x28; r.m=3; }
+    public void RST30() { rsv(); r.sp-=2; mMU.ww(r.sp,r.pc); r.pc=0x30; r.m=3; }
+    public void RST38() { rsv(); r.sp-=2; mMU.ww(r.sp,r.pc); r.pc=0x38; r.m=3; }
+    public void RST40() { rsv(); r.sp-=2; mMU.ww(r.sp,r.pc); r.pc=0x40; r.m=3; }
+    public void RST48() { rsv(); r.sp-=2; mMU.ww(r.sp,r.pc); r.pc=0x48; r.m=3; }
+    public void RST50() { rsv(); r.sp-=2; mMU.ww(r.sp,r.pc); r.pc=0x50; r.m=3; }
+    public void RST58() { rsv(); r.sp-=2; mMU.ww(r.sp,r.pc); r.pc=0x58; r.m=3; }
+    public void RST60() { rsv(); r.sp-=2; mMU.ww(r.sp,r.pc); r.pc=0x60; r.m=3; }
+
+    public void NOP() { r.m=1; }
+    public void HALT() { _halt=1; r.m=1; }
+
+    public void DI() { r.ime=0; r.m=1; }
+    public void EI() { r.ime=1; r.m=1; }
+
+    /*--- Helper functions ---*/
+    public void rsv() {
+      rv.a = r.a; rv.b = r.b;
+      rv.c = r.c; rv.d = r.d;
+      rv.e = r.e; rv.f = r.f;
+      rv.h = r.h; rv.l = r.l;
+    }
+
+    public void rrs() {
+      r.a = rv.a; r.b = rv.b;
+      r.c = rv.c; r.d = rv.d;
+      r.e = rv.e; r.f = rv.f;
+      r.h = rv.h; r.l = rv.l;
+    }
+
+    public void MAPcb() {
+      int i=mMU.rb(r.pc); r.pc++;
+      r.pc &= 65535;
+      if(_cbmap[i] != null) _cbmap[i]();
+//      else throw new Exception("Z80: MAPcb i = " + i);
+    }
+
+    public void XX() {
+      /*Undefined map entry*/
+      var opc = r.pc-1;
+  //    throw new Exception("Z80: Unimplemented instruction at $"+opc+", stopping.");
+      _stop=1;
+    }  
 }
 
 

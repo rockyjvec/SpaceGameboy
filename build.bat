@@ -3,7 +3,6 @@ copy /b ^
   SpaceGameboy.lib.cs
 echo.> SpaceGameboy.min.cs
 echo.>> SpaceGameboy.min.cs
-echo /*** Ignore minified library code below ***/ >> SpaceGameboy.min.cs
 CSharpMinifier\CSharpMinify --locals --members --types --spaces --regions --comments --namespaces --to-string-methods --enum-to-int --line-length 100000 --skip-compile SpaceGameboy.lib.cs >> SpaceGameboy.min.cs
 copy /b ^
   Main.cs +^

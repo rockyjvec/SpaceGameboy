@@ -1,8 +1,17 @@
-class GPUData {
-    public int y = -16, x = -8, tile = 0, palette = 0, yflip = 0, xflip = 0, prio = 0, num = 0;
+class GPUData //: IComparable<GPUData>
+{
+    public int y, x, tile, palette, yflip, xflip, prio, num;
     public GPUData(int num)
     {
-        this.num = 0;
+        this.num = num;
+        y = -16;
+        x = -8;
+        tile = 0;
+        palette = 0;
+        yflip = 0;
+        xflip = 0;
+        prio = 0;
+        num = 0;
     }
 }
 
@@ -12,74 +21,85 @@ class GPUPalette {
     public byte[] obj1 = new byte[4];
 }
 
-class GPUScreen {
-    public int width = 160;
-    public int height = 144;
-    public byte[] data = new byte[160*144*4];
-}
-
 class GPU 
 {
+  public char[] data = new char[161*144];
   public byte[] _vram = new byte[8192];
   public byte[] _oam = new byte[160];
-  private byte[] _reg = new byte[256];
-  private byte[][][] _tilemap = new byte[512][][];
-  private GPUData[] _objdata = new GPUData[40];
-  private List<GPUData> _objdatasorted;
-  private GPUPalette _palette = new GPUPalette();
-  private byte[] _scanrow = new byte[160];
+  byte[] _reg = new byte[256];
+  byte[][][] _tilemap = new byte[512][][];
+  GPUData[] _objdata = new GPUData[40];
+//  List<GPUData> _objdatasorted;
+  GPUPalette _palette = new GPUPalette();
+  byte[] _scanrow = new byte[160];
 
-  private byte _curline = 0;
-  private int _curscan = 0;
-  private int _linemode = 0;
-  private int _modeclocks = 0;
+  byte _curline = 0;
+  int _curscan = 0;
+  int _linemode = 0;
+  int _modeclocks = 0;
 
-  private byte _yscrl = 0;
-  private byte _xscrl = 0;
-  private byte _raster = 0;
-  private int _ints = 0;
+  byte _yscrl = 0;
+  byte _xscrl = 0;
+  byte _raster = 0;
+  int _ints = 0;
   
-  private int _lcdon = 0;
-  private int _bgon = 0;
-  private int _objon = 0;
-  private int _winon = 0;
+  int _lcdon = 0;
+  int _bgon = 0;
+  int _objon = 0;
+  int _winon = 0;
 
-  private int _objsize = 0;
+  int _objsize = 0;
 
-  private int _bgtilebase = 0x0000;
-  private int _bgmapbase = 0x1800;
-  private int _wintilebase = 0x1800;
+  int _bgtilebase = 0x0000;
+  int _bgmapbase = 0x1800;
+  int _wintilebase = 0x1800;
   
-  char[] colors = new char[] {'\uE00F', '\uE00D', '\uE00E', '\uE006'};
+  long lastRender = 0;
+  
+  char[] colors = new char[256];
   
   IMyTextPanel screen;
-  private GPUScreen _scrn = new GPUScreen();
   
-  private Z80 z80;
-  private MMU mMU;
+  Z80 z80;
+  MMU mMU;
   
   public GPU(IMyTextPanel screen)
   {
+//      SpaceGameboy.Echo("GPU Constructor");
       this.screen = screen;
+      for(int n = 0; n < 256; n++)
+      {
+            if(n == 0)
+            {
+                colors[n] = '\uE00F';                
+            }
+            else if (n == 96)
+            {
+                colors[n] = '\uE00E';                
+            }
+            else if(n == 192)
+            {
+                colors[n] = '\uE00D';                
+            }
+            else if(n == 255)
+            {
+                colors[n] = '\uE006';
+            }
+      }
   }
   
   public void update()
   {
-    screen.ShowTextureOnScreen();
-    screen.ShowPublicTextOnScreen();
+    long currentTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
     
-    string buffer = "";    
-
-    for(int y = 0; y < _scrn.height; y++)
+    if(currentTime-lastRender > 50)
     {
-        for(int x = 0; x < _scrn.width; x++)
-        {
-            buffer += colors[_scrn.data[y*_scrn.width+x]/256*colors.Length];
-        }
-        buffer += "\n";
+        screen.ShowTextureOnScreen();
+        screen.ShowPublicTextOnScreen();
+        
+        screen.WritePublicText(new String(data), false);    
+        lastRender = currentTime;        
     }
-    
-    screen.WritePublicText(buffer, false);      
   }
 
   public void reset(Z80 z80, MMU mMU)
@@ -87,208 +107,226 @@ class GPU
     this.z80 = z80;
     this.mMU = mMU;
 
-    Array.Clear(this._vram, 0x00, this._vram.Length);
-    Array.Clear(this._oam, 0x00, this._oam.Length);
+    Array.Clear(_vram, 0x00, _vram.Length);
+    Array.Clear(_oam, 0x00, _oam.Length);
+    
+   // SpaceGameboy.Echo("Clearing palettes");
+    
     for(int i=0; i<4; i++) 
     {
-      this._palette.bg[i] = 0xFF;
-      this._palette.obj0[i] = 0xFF;
-      this._palette.obj1[i] = 0xFF;
+      _palette.bg[i] = 0xFF;
+      _palette.obj0[i] = 0xFF;
+      _palette.obj1[i] = 0xFF;
+
     }
+    
+   // SpaceGameboy.Echo("Clearing tilemaps");
     for(int i=0;i<512;i++)
     {
-      this._tilemap[i] = new byte[8][];
+      _tilemap[i] = new byte[8][];
       for(int j=0;j<8;j++)
       {
-        this._tilemap[i][j] = new byte[8];
+        _tilemap[i][j] = new byte[9];
         for(int k=0;k<8;k++)
         {
-          this._tilemap[i][j][k] = 0x00;
+          _tilemap[i][j][k] = 0x00;
         }
       }
     }
-
+  }
+  public void reset2()
+  {
 //    Echo("GPU: Initialising screen.");
  
-    this._scrn.width = 160;
-    this._scrn.height = 144;
-    Array.Clear(this._scrn.data, 0xFF, this._scrn.data.Length);
-        
+    //SpaceGameboy.Echo("Clearing screen data 1/2");
+    for(int i = 0; i < data.Length / 2; i++) data[i] = colors[0xFF];
+  }
+  public void reset3()
+  {
+   // SpaceGameboy.Echo("Clearing screen data 2/2");
+    for(int i = data.Length / 2; i < data.Length; i++) data[i] = colors[0xFF];
+  }
+  public void reset4()
+  {
+    for(int n = 160; n < data.Length; n+= 161) data[n] = "\n"[0];
+
     update();
     
-    this._curline=0;
-    this._curscan=0;
-    this._linemode=2;
-    this._modeclocks=0;
-    this._yscrl=0;
-    this._xscrl=0;
-    this._raster=0;
-    this._ints = 0;
+    _curline=0;
+    _curscan=0;
+    _linemode=2;
+    _modeclocks=0;
+    _yscrl=0;
+    _xscrl=0;
+    _raster=0;
+    _ints = 0;
 
-    this._lcdon = 0;
-    this._bgon = 0;
-    this._objon = 0;
-    this._winon = 0;
+    _lcdon = 0;
+    _bgon = 0;
+    _objon = 0;
+    _winon = 0;
 
-    this._objsize = 0;
-    for(int i=0; i<160; i++) this._scanrow[i] = 0;
+    _objsize = 0;
+    for(int i=0; i<160; i++) _scanrow[i] = 0;
 
     for(int i=0; i<40; i++)
     {
-      this._objdata[i] = new GPUData(i);
+      _objdata[i] = new GPUData(i);
     }
 
     // Set to values expected by BIOS, to start
-    this._bgtilebase = 0x0000;
-    this._bgmapbase = 0x1800;
-    this._wintilebase = 0x1800;
+    _bgtilebase = 0x0000;
+    _bgmapbase = 0x1800;
+    _wintilebase = 0x1800;
 
 //    Echo("GPU: Reset.");
   }
 
   public void checkline() {
-    this._modeclocks += z80._r.m;
-    if(this._linemode == 0) // In hblank
+    _modeclocks += z80.r.m;
+    if(_linemode == 0) // In hblank
     {
-        if(this._modeclocks >= 51)
+        if(_modeclocks >= 51)
         {
           // End of hblank for last scanline; render screen
-          if(this._curline == 143)
+          if(_curline == 143)
           {
-            this._linemode = 1;
-            this.update();
+            _linemode = 1;
+            update();
             mMU._if |= 1;
           }
           else
           {
-            this._linemode = 2;
+            _linemode = 2;
           }
-          this._curline++;
-          this._curscan += 640;
-          this._modeclocks=0;
+          _curline++;
+          _curscan += 161;
+          _modeclocks=0;
         }
     }
-    else if(this._linemode == 1) // In vblank
+    else if(_linemode == 1) // In vblank
     {
-        if(this._modeclocks >= 114)
+        if(_modeclocks >= 114)
         {
-          this._modeclocks = 0;
-          this._curline++;
-          if(this._curline > 153)
+          _modeclocks = 0;
+          _curline++;
+          if(_curline > 153)
           {
-            this._curline = 0;
-	        this._curscan = 0;
-            this._linemode = 2;
+            _curline = 0;
+	        _curscan = 0;
+            _linemode = 2;
           }
         }
     }
-    else if(this._linemode == 2) // In OAM-read mode
+    else if(_linemode == 2) // In OAM-read mode
     {
-        if(this._modeclocks >= 20)
+        if(_modeclocks >= 20)
         {
-          this._modeclocks = 0;
-          this._linemode = 3;
+          _modeclocks = 0;
+          _linemode = 3;
         }
     }
-    else if(this._linemode == 3) // In VRAM-read mode
+    else if(_linemode == 3) // In VRAM-read mode
     {
         // Render scanline at end of allotted time
-        if(this._modeclocks >= 43)
+        if(_modeclocks >= 43)
         {
-          this._modeclocks = 0;
-          this._linemode = 0;
-          if(this._lcdon > 0)
+          _modeclocks = 0;
+          _linemode = 0;
+          if(_lcdon > 0)
           {
-            if(this._bgon > 0)
+            if(_bgon > 0)
             {
-              var linebase = this._curscan;
-              var mapbase = this._bgmapbase + ((((this._curline+this._yscrl)&255)>>3)<<5);
-              var y = (this._curline+this._yscrl)&7;
-              var x = this._xscrl&7;
-              var t = (this._xscrl>>3)&31;
+              int linebase = _curscan;
+              int mapbase = _bgmapbase + ((((_curline+_yscrl)&255)>>3)<<5);
+              int y = (_curline+_yscrl)&7;
+              int x = _xscrl&7;
+              int t = (_xscrl>>3)&31;
 //              var pixel;
-              var w=160;
+              int w=160;
 
-              if(this._bgtilebase > 0)
+              if(_bgtilebase > 0)
               {
-	            int tile = this._vram[mapbase+t];
+	            int tile = _vram[mapbase+t];
 		        if(tile<128) tile=(256+tile);
-                var tilerow = this._tilemap[tile][y];
-                for(;w>=0;w--)
+                var tilerow = _tilemap[tile][y];
+                for(int i = 0; i < 99999; i++)
                 {
-		          this._scanrow[160-x] = tilerow[x];
-                  this._scrn.data[linebase+3] = this._palette.bg[tilerow[x]];
+		          _scanrow[159-x] = tilerow[x];
+                  data[linebase] = colors[_palette.bg[tilerow[x]]];
                   x++;
                   if(x==8) 
                   { 
                     t=(t+1)&31;
                     x=0;
-                    tile=this._vram[mapbase+t];
+                    tile=_vram[mapbase+t];
                     if(tile<128)
                     {
                         tile=(256+tile);                        
                     }
-                    tilerow = this._tilemap[tile][y]; 
+                    tilerow = _tilemap[tile][y]; 
                   }
-                  linebase+=4;
+                  linebase++;
+                  if(!(--w > 0)) break;
                 }
               }
               else
               {
-                var tilerow=this._tilemap[this._vram[mapbase+t]][y];
-                for(;w>=0;w--)
+                var tilerow=_tilemap[_vram[mapbase+t]][y];
+                for(int i = 0; i < 99999; i++)
                 {
-		          this._scanrow[160-x] = tilerow[x];
-                  this._scrn.data[linebase+3] = this._palette.bg[tilerow[x]];
+		          _scanrow[159-x] = tilerow[x];
+                  data[linebase] = colors[_palette.bg[tilerow[x]]];
                   x++;
-                  if(x==8) { t=(t+1)&31; x=0; tilerow=this._tilemap[this._vram[mapbase+t]][y]; }
-                  linebase+=4;
+                  if(x==8) { t=(t+1)&31; x=0; tilerow=_tilemap[_vram[mapbase+t]][y]; }
+                  linebase++;
+                  if(!(--w > 0)) break;
                 }
 	          }
             }
-            if(this._objon > 0)
+            if(_objon > 0)
             {
               var cnt = 0;
-              if(this._objsize > 0)
+              if(_objsize > 0)
               {
-                for(var i=0; i<40; i++)
+/*                for(var i=0; i<40; i++)
                 {
-                }
+                }*/
               }
               else
               {
                 byte[] tilerow;
-                var obj = this._objdatasorted[0];
-                var pal = this._palette.obj0;
+                GPUData obj;
+                byte[] pal;
 //                var pixel;
-                var x = 0;
-                var linebase = this._curscan;
+                int x = 0;
+                int linebase = _curscan;
                 for(var i=0; i<40; i++)
                 {
-                  obj = this._objdatasorted[i];
-                  if(obj.y <= this._curline && (obj.y+8) > this._curline)
+                  obj = _objdata[i];
+                  if(obj.y <= _curline && (obj.y+8) > _curline)
                   {
                     if(obj.yflip > 0)
-                      tilerow = this._tilemap[obj.tile][7-(this._curline-obj.y)];
+                      tilerow = _tilemap[obj.tile][7-(_curline-obj.y)];
                     else
-                      tilerow = this._tilemap[obj.tile][this._curline-obj.y];
+                      tilerow = _tilemap[obj.tile][_curline-obj.y];
 
-                    if(obj.palette > 0) pal=this._palette.obj1;
-                    else pal=this._palette.obj0;
+                    if(obj.palette > 0) pal=_palette.obj1;
+                    else pal=_palette.obj0;
 
-                    linebase = (this._curline*160+obj.x)*4;
+                    linebase = (_curline*161+obj.x);
                     if(obj.xflip > 0)
                     {
                       for(x=0; x<8; x++)
                       {
                         if(obj.x+x >=0 && obj.x+x < 160)
                         {
-                          if(tilerow[7-x] > 0 && (obj.prio > 0 || !(this._scanrow[x] > 0)))
+                          if(tilerow[7-x] > 0 && (obj.prio > 0 || !(_scanrow[x] > 0)))
                           {
-                            this._scrn.data[linebase+3] = pal[tilerow[7-x]];
+                            data[linebase] = colors[pal[tilerow[7-x]]];
                           }
                         }
-                        linebase+=4;
+                        linebase++;
                       }
                     }
                     else
@@ -297,12 +335,12 @@ class GPU
                       {
                         if(obj.x+x >=0 && obj.x+x < 160)
                         {
-                          if(tilerow[x] > 0 && (obj.prio > 0 || !(this._scanrow[x] > 0)))
+                          if(tilerow[x] > 0 && (obj.prio > 0 || !(_scanrow[x] > 0)))
                           {
-                            this._scrn.data[linebase+3] = pal[tilerow[x]];
+                            data[linebase] = colors[pal[tilerow[x]]];
                           }
                         }
-                        linebase+=4;
+                        linebase++;
                       }
                     }
                     cnt++; if(cnt>10) break;
@@ -324,7 +362,7 @@ class GPU
     for(var x=0;x<8;x++)
     {
       sx=1<<(7-x);
-      this._tilemap[tile][y][x] = (byte)((((this._vram[saddr]&sx)>0)?0x01:0x00) | (((this._vram[saddr+1]&sx)>0)?0x02:0x00));
+      _tilemap[tile][y][x] = (byte)((((_vram[saddr]&sx)>0)?0x01:0x00) | (((_vram[saddr+1]&sx)>0)?0x02:0x00));
     }
   }
 
@@ -335,26 +373,23 @@ class GPU
     {
       switch(addr&3)
       {
-        case 0: this._objdata[obj].y=val-16; break;
-        case 1: this._objdata[obj].x=val-8; break;
+        case 0: _objdata[obj].y=val-16; break;
+        case 1: _objdata[obj].x=val-8; break;
         case 2:
-          if(this._objsize>0) this._objdata[obj].tile = (val&0xFE);
-          else this._objdata[obj].tile = val;
+          if(_objsize>0) _objdata[obj].tile = (val&0xFE);
+          else _objdata[obj].tile = val;
           break;
         case 3:
-          this._objdata[obj].palette = ((val&0x10)>0)?1:0;
-          this._objdata[obj].xflip = ((val&0x20)>0)?1:0;
-          this._objdata[obj].yflip = ((val&0x40)>0)?1:0;
-          this._objdata[obj].prio = ((val&0x80)>0)?1:0;
+          _objdata[obj].palette = ((val&0x10)>0)?1:0;
+          _objdata[obj].xflip = ((val&0x20)>0)?1:0;
+          _objdata[obj].yflip = ((val&0x40)>0)?1:0;
+          _objdata[obj].prio = ((val&0x80)>0)?1:0;
           break;
      }
     }
-    this._objdatasorted = new List<GPUData>(this._objdata);
-    this._objdatasorted.Sort(delegate(GPUData a,GPUData b){
-      if(a.x>b.x) return -1;
-      if(a.num>b.num) return -1;
-      return 0;
-    });
+//    _objdatasorted = new List<GPUData>(_objdata);
+   // _objdatasorted.Sort();
+   
   }
 
   public byte rb(int addr) {
@@ -362,65 +397,65 @@ class GPU
     switch(gaddr)
     {
       case 0:
-        return (byte)(((this._lcdon>0)?0x80:0)|
-               ((this._bgtilebase==0x0000)?0x10:0)|
-               ((this._bgmapbase==0x1C00)?0x08:0)|
-               ((this._objsize>0)?0x04:0)|
-               ((this._objon>0)?0x02:0)|
-               ((this._bgon>0)?0x01:0));
+        return (byte)(((_lcdon>0)?0x80:0)|
+               ((_bgtilebase==0x0000)?0x10:0)|
+               ((_bgmapbase==0x1C00)?0x08:0)|
+               ((_objsize>0)?0x04:0)|
+               ((_objon>0)?0x02:0)|
+               ((_bgon>0)?0x01:0));
 
       case 1:
-        return (byte)((this._curline==this._raster?4:0)|this._linemode);
+        return (byte)((_curline==_raster?4:0)|_linemode);
 
       case 2:
-        return this._yscrl;
+        return _yscrl;
 
       case 3:
-        return this._xscrl;
+        return _xscrl;
 
       case 4:
-        return this._curline;
+        return _curline;
 
       case 5:
-        return this._raster;
+        return _raster;
 
       default:
-        return this._reg[gaddr];
+        return _reg[gaddr];
     }
   }
 
   public void wb(int addr,byte val) {
     var gaddr = addr-0xFF40;
-    this._reg[gaddr] = val;
+    _reg[gaddr] = val;
     switch(gaddr)
     {
       case 0:
-        this._lcdon = ((val&0x80)>0)?1:0;
-        this._bgtilebase = ((val&0x10)>0)?0x0000:0x0800;
-        this._bgmapbase = ((val&0x08)>0)?0x1C00:0x1800;
-        this._objsize = ((val&0x04)>0)?1:0;
-        this._objon = ((val&0x02)>0)?1:0;
-        this._bgon = ((val&0x01)>0)?1:0;
+        _lcdon = ((val&0x80)>0)?1:0;
+        _bgtilebase = ((val&0x10)>0)?0x0000:0x0800;
+        _bgmapbase = ((val&0x08)>0)?0x1C00:0x1800;
+        _objsize = ((val&0x04)>0)?1:0;
+        _objon = ((val&0x02)>0)?1:0;
+        _bgon = ((val&0x01)>0)?1:0;
         break;
 
       case 2:
-        this._yscrl = val;
+        _yscrl = val;
         break;
 
       case 3:
-        this._xscrl = val;
+        _xscrl = val;
         break;
 
       case 5:
-        this._raster = val;
+        _raster = val;
         break; // this was missing, should it be?
       // OAM DMA
       case 6:
         for(var i=0; i<160; i++)
         {
           byte v = mMU.rb((val<<8)+i);
-          this._oam[i] = v;
-          this.updateoam(0xFE00+i, v);
+          _oam[i] = v;
+          updateoam(0xFE00+i, v);
         }
         break;
 
@@ -430,10 +465,10 @@ class GPU
         {
           switch((val>>(i*2))&3)
           {
-            case 0: this._palette.bg[i] = 255; break;
-            case 1: this._palette.bg[i] = 192; break;
-            case 2: this._palette.bg[i] = 96; break;
-            case 3: this._palette.bg[i] = 0; break;
+            case 0: _palette.bg[i] = 255; break;
+            case 1: _palette.bg[i] = 192; break;
+            case 2: _palette.bg[i] = 96; break;
+            case 3: _palette.bg[i] = 0; break;
           }
         }
         break;
@@ -444,10 +479,10 @@ class GPU
         {
           switch((val>>(i*2))&3)
           {
-            case 0: this._palette.obj0[i] = 255; break;
-            case 1: this._palette.obj0[i] = 192; break;
-            case 2: this._palette.obj0[i] = 96; break;
-            case 3: this._palette.obj0[i] = 0; break;
+            case 0: _palette.obj0[i] = 255; break;
+            case 1: _palette.obj0[i] = 192; break;
+            case 2: _palette.obj0[i] = 96; break;
+            case 3: _palette.obj0[i] = 0; break;
           }
         }
         break;
@@ -458,10 +493,10 @@ class GPU
         {
           switch((val>>(i*2))&3)
           {
-            case 0: this._palette.obj1[i] = 255; break;
-            case 1: this._palette.obj1[i] = 192; break;
-            case 2: this._palette.obj1[i] = 96; break;
-            case 3: this._palette.obj1[i] = 0; break;
+            case 0: _palette.obj1[i] = 255; break;
+            case 1: _palette.obj1[i] = 192; break;
+            case 2: _palette.obj1[i] = 96; break;
+            case 3: _palette.obj1[i] = 0; break;
           }
         }
         break;

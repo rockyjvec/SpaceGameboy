@@ -1,58 +1,94 @@
 public class SpaceGameboy
 {
-  int run_interval = 0;
-  string trace = "";
-
   private GPU gPU;
   private MMU mMU;
   private Z80 z80;
   private KEY kEY;
   private TIMER tIMER;
+  static public Action<string> Echo;
   
-  public SpaceGameboy(IMyTextPanel screen)
+  public SpaceGameboy(IMyTextPanel screen, Action<string> Echo)
   {
+      SpaceGameboy.Echo = Echo;
+//      Echo("Loading GPU");
       this.gPU = new GPU(screen);
+      //Echo("Loading MMU");
       this.mMU = new MMU();
+      //Echo("Loading Z80");
       this.z80 = new Z80();
+      //Echo("Loading KEY");
       this.kEY = new KEY();
+      //Echo("Loading TIMER");
       this.tIMER = new TIMER();
   }
   
-  public void frame() {
+  public void frame(int throttle, int stage) {
     var fclock = z80._clock.m+17556;
+    //Echo every 100 frames
+//    if(stage % 100 == 0) Echo("Stepping Gameboy (PC = " + z80.r.pc + ")"); 
     //var brk = document.getElementById('breakpoint').value;
     do {
-      if(z80._halt>0) z80._r.m=1;
-      else
+      throttle--;
+      //if(z80._halt>0) z80.r.m=1;
+      //else
+      //{
+      //  z80.r.r = (z80.r.r+1) & 127;
+        z80._map[mMU.rb(z80.r.pc++)]();
+        z80.r.pc &= 65535;
+      //}
+      if(z80.r.ime >0 && mMU._ie>0 && mMU._if>0)
       {
-      //  z80._r.r = (z80._r.r+1) & 127;
-        z80._map[mMU.rb(z80._r.pc++)]();
-        z80._r.pc &= 65535;
+        z80._halt=0; z80.r.ime=0;
+	    var ifired = mMU._ie & mMU._if;
+        if((ifired&1)>0) { mMU._if &= 0xFE; z80.RST40(); }
+        else if((ifired&2)>0) { mMU._if &= 0xFD; z80.RST48(); }
+        else if((ifired&4)>0) { mMU._if &= 0xFB; z80.RST50(); }
+        else if((ifired&8)>0) { mMU._if &= 0xF7; z80.RST58(); }
+        else if((ifired&16)>0) { mMU._if &= 0xEF; z80.RST60(); }
+	else { z80.r.ime=1; }
       }
-      if(z80._r.ime >0 && mMU._ie>0 && mMU._if>0)
-      {
-        z80._halt=0; z80._r.ime=0;
-	var ifired = mMU._ie & mMU._if;
-        if((ifired&1)>0) { mMU._if &= 0xFE; z80._ops.RST40(); }
-        else if((ifired&2)>0) { mMU._if &= 0xFD; z80._ops.RST48(); }
-        else if((ifired&4)>0) { mMU._if &= 0xFB; z80._ops.RST50(); }
-        else if((ifired&8)>0) { mMU._if &= 0xF7; z80._ops.RST58(); }
-        else if((ifired&16)>0) { mMU._if &= 0xEF; z80._ops.RST60(); }
-	else { z80._r.ime=1; }
-      }
-      z80._clock.m += z80._r.m;
+      z80._clock.m += z80.r.m;
       gPU.checkline();
       tIMER.inc();
-    } while(z80._clock.m < fclock);
+    } while(z80._clock.m < fclock && throttle > 0);
 
   }
   
-  public void reset(string file) {
-    gPU.reset(this.z80, this.mMU); mMU.reset(gPU, tIMER, kEY, z80); z80.reset(mMU); kEY.reset(); tIMER.reset(mMU, z80);
-    z80._r.pc=0x100;mMU._inbios=0;z80._r.sp=0xFFFE;/*z80._r.hl=0x014D;*/z80._r.c=0x13;z80._r.e=0xD8;z80._r.a=1;
-    //TODO:                                              ^ this was missing, I don't know if it is supposed to be set
-    mMU.load(file);
-    this.run();
+  public void reset(byte[] rom, int stage) {
+      switch(stage)
+      {
+          case 1:
+            //SpaceGameboy.Echo("Resetting gpu");
+            gPU.reset(this.z80, this.mMU);
+            break;
+          case 2:
+            gPU.reset2();            
+            break;
+          case 3:
+            gPU.reset3();            
+            break;
+          case 4:
+            gPU.reset4();            
+            break;
+          case 5:
+           // SpaceGameboy.Echo("Resetting mmu");
+            mMU.reset(gPU, tIMER, kEY, z80); 
+         //   SpaceGameboy.Echo("Resetting z80");
+            z80.reset(mMU); 
+         //   SpaceGameboy.Echo("Resetting key");
+            kEY.reset(); 
+       //     SpaceGameboy.Echo("Resetting timer");
+            tIMER.reset(mMU, z80);
+            z80.r.pc=0x100;mMU._inbios=0;z80.r.sp=0xFFFE;/*z80.r.hl=0x014D;*/z80.r.c=0x13;z80.r.e=0xD8;z80.r.a=1;
+            //TODO:                                              ^ this was missing, I don't know if it is supposed to be set
+            break;
+          case 6:
+           // SpaceGameboy.Echo("Loading ROM!");
+            mMU.load(rom);
+            this.run();
+            break;
+      }
+    
   
 //    Echo("MAIN: Reset.");
   }
@@ -61,13 +97,13 @@ public class SpaceGameboy
     z80._stop = 0;
   }
  
-    public void keydown(int keyCode)
+    public void keydown(string key)
     {
-        kEY.keydown(keyCode);
+        kEY.keydown(key);
     }
     
-    public void keyup(int keyCode)
+    public void keyup(string key)
     {
-        kEY.keyup(keyCode);        
+        kEY.keyup(key);        
     }
 }
