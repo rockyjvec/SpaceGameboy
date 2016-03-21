@@ -41,20 +41,17 @@ class GPU
   byte _yscrl = 0;
   byte _xscrl = 0;
   byte _raster = 0;
-  int _ints = 0;
   
   int _lcdon = 0;
   int _bgon = 0;
   int _objon = 0;
-  int _winon = 0;
 
   int _objsize = 0;
 
   int _bgtilebase = 0x0000;
   int _bgmapbase = 0x1800;
-  int _wintilebase = 0x1800;
   
-  long lastRender = 0;
+  long lastRender = 0, currentTime;
   
   char[] colors = new char[256];
   
@@ -87,10 +84,10 @@ class GPU
             }
       }
   }
-  
+
   public void update()
   {
-    long currentTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+    currentTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
     
     if(currentTime-lastRender > 50)
     {
@@ -159,12 +156,10 @@ class GPU
     _yscrl=0;
     _xscrl=0;
     _raster=0;
-    _ints = 0;
 
     _lcdon = 0;
     _bgon = 0;
     _objon = 0;
-    _winon = 0;
 
     _objsize = 0;
     for(int i=0; i<160; i++) _scanrow[i] = 0;
@@ -177,7 +172,6 @@ class GPU
     // Set to values expected by BIOS, to start
     _bgtilebase = 0x0000;
     _bgmapbase = 0x1800;
-    _wintilebase = 0x1800;
 
 //    Echo("GPU: Reset.");
   }
@@ -301,6 +295,7 @@ class GPU
 //                var pixel;
                 int x = 0;
                 int linebase = _curscan;
+                int curline161 = _curline*161;
                 for(var i=0; i<40; i++)
                 {
                   obj = _objdata[i];
@@ -314,7 +309,7 @@ class GPU
                     if(obj.palette > 0) pal=_palette.obj1;
                     else pal=_palette.obj0;
 
-                    linebase = (_curline*161+obj.x);
+                    linebase = (curline161+obj.x);
                     if(obj.xflip > 0)
                     {
                       for(x=0; x<8; x++)
@@ -352,6 +347,9 @@ class GPU
         }
     }
   }
+
+  int gaddr, i;
+  byte v;
 
   public void updatetile(int addr,byte val) {
     var saddr = addr;
@@ -393,7 +391,7 @@ class GPU
   }
 
   public byte rb(int addr) {
-    var gaddr = addr-0xFF40;
+    gaddr = addr-0xFF40;
     switch(gaddr)
     {
       case 0:
@@ -425,7 +423,7 @@ class GPU
   }
 
   public void wb(int addr,byte val) {
-    var gaddr = addr-0xFF40;
+    gaddr = addr-0xFF40;
     _reg[gaddr] = val;
     switch(gaddr)
     {
@@ -451,9 +449,9 @@ class GPU
         break; // this was missing, should it be?
       // OAM DMA
       case 6:
-        for(var i=0; i<160; i++)
+        for(i=0; i<160; i++)
         {
-          byte v = mMU.rb((val<<8)+i);
+          v = mMU.rb((val<<8)+i);
           _oam[i] = v;
           updateoam(0xFE00+i, v);
         }
@@ -461,7 +459,7 @@ class GPU
 
       // BG palette mapping
       case 7:
-        for(var i=0;i<4;i++)
+        for(i=0;i<4;i++)
         {
           switch((val>>(i*2))&3)
           {
@@ -475,7 +473,7 @@ class GPU
 
       // OBJ0 palette mapping
       case 8:
-        for(var i=0;i<4;i++)
+        for(i=0;i<4;i++)
         {
           switch((val>>(i*2))&3)
           {
@@ -489,7 +487,7 @@ class GPU
 
       // OBJ1 palette mapping
       case 9:
-        for(var i=0;i<4;i++)
+        for(i=0;i<4;i++)
         {
           switch((val>>(i*2))&3)
           {

@@ -1,11 +1,11 @@
 class KEY 
 {
   byte[] _keys = new byte[2] {0x0F,0x0F};
-  int _colidx = 0;
+  byte _colidx = 0;
 
   public void reset() {
     _keys = new byte[2]{0x0F,0x0F};
-    _colidx = 0;
+    _colidx = 0x00;
 //    Echo("KEY: Reset.");
   }
 
@@ -19,8 +19,8 @@ class KEY
     }
   }
 
-  public void wb(int v) {
-    _colidx = v&0x30;
+  public void wb(byte v) {
+    _colidx = (byte)(v&0x30);
   }
 
   public void keydown(string key) {

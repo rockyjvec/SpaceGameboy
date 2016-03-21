@@ -22,13 +22,14 @@ public class SpaceGameboy
       this.tIMER = new TIMER();
   }
   
+  int fclock, ifired;
   public void frame(int throttle, int stage) {
-    var fclock = z80._clock.m+17556;
+    fclock = z80._clock.m+17556;
     //Echo every 100 frames
 //    if(stage % 100 == 0) Echo("Stepping Gameboy (PC = " + z80.r.pc + ")"); 
     //var brk = document.getElementById('breakpoint').value;
-    do {
-      throttle--;
+    for(;z80._clock.m < fclock && throttle > 0;throttle--)
+    {
       //if(z80._halt>0) z80.r.m=1;
       //else
       //{
@@ -39,18 +40,18 @@ public class SpaceGameboy
       if(z80.r.ime >0 && mMU._ie>0 && mMU._if>0)
       {
         z80._halt=0; z80.r.ime=0;
-	    var ifired = mMU._ie & mMU._if;
+	    ifired = mMU._ie & mMU._if;
         if((ifired&1)>0) { mMU._if &= 0xFE; z80.RST40(); }
         else if((ifired&2)>0) { mMU._if &= 0xFD; z80.RST48(); }
         else if((ifired&4)>0) { mMU._if &= 0xFB; z80.RST50(); }
         else if((ifired&8)>0) { mMU._if &= 0xF7; z80.RST58(); }
         else if((ifired&16)>0) { mMU._if &= 0xEF; z80.RST60(); }
-	else { z80.r.ime=1; }
+        else { z80.r.ime=1; }
       }
       z80._clock.m += z80.r.m;
       gPU.checkline();
       tIMER.inc();
-    } while(z80._clock.m < fclock && throttle > 0);
+    } 
 
   }
   

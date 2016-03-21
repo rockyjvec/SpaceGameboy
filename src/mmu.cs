@@ -23,7 +23,9 @@ class MMU
   TIMER tIMER;
   KEY kEY;
   Z80 z80;
-  
+
+  int v, w;
+
   public void reset(GPU gPU, TIMER tIMER, KEY kEY, Z80 z80) {
 
     this.gPU = gPU;
@@ -61,7 +63,7 @@ class MMU
   }
 
   public byte rb(int addr) {
-    int v = addr&0xF000;   
+    v = addr&0xF000;   
     if(v == 0x0000)
     {
       // ROM bank 0
@@ -106,7 +108,7 @@ class MMU
     }
     else if(v <= 0xF000)
     {
-        int w = addr&0x0F00;
+        w = addr&0x0F00;
       // Everything else
         if(w <= 0xD00)
         {
@@ -149,7 +151,7 @@ class MMU
   public int rw(int addr) { return rb(addr)+(rb(addr+1)<<8); }
 
   public void wb(int addr, byte val) {
-    int v = addr&0xF000;
+    v = addr&0xF000;
     if(v == 0x0000 || v == 0x1000)
     {
       // ROM bank 0
@@ -221,7 +223,7 @@ class MMU
     }
     else if(v == 0xF000) // Everything else
     {
-        var w = addr&0x0F00;
+        w = addr&0x0F00;
         if(w <= 0xD00)
         {
           // Echo RAM

@@ -1,7 +1,3 @@
-class TIMERclock {
-    public int main = 0, sub = 0, div = 0;
-}
-
 class TIMER 
 {
   private byte _div = 0;
@@ -9,10 +5,11 @@ class TIMER
   private byte _tima = 0;
   private byte _tac = 0;
 
-  private TIMERclock _clock = new TIMERclock();
-
+  int main = 0, sub = 0, div = 0;
+  
   MMU mMU;
   Z80 z80;
+  int oldclk;
   
   public void reset(MMU mMU, Z80 z80) {
     this.mMU = mMU;
@@ -21,15 +18,15 @@ class TIMER
     _tma = 0;
     _tima = 0;
     _tac = 0;
-    _clock.main = 0;
-    _clock.sub = 0;
-    _clock.div = 0;
+    main = 0;
+    sub = 0;
+    div = 0;
 //    Echo("TIMER: Reset.");
   }
 
   public void step() {
     _tima++;
-    _clock.main = 0;
+    main = 0;
     if(_tima > 255)
     {
       _tima = _tma;
@@ -38,18 +35,18 @@ class TIMER
   }
 
   public void inc() {
-    var oldclk = _clock.main;
+    oldclk = main;
 
-    _clock.sub += z80.r.m;
-    if(_clock.sub > 3)
+    sub += z80.r.m;
+    if(sub > 3)
     {
-      _clock.main++;
-      _clock.sub -= 4;
+      main++;
+      sub -= 4;
 
-      _clock.div++;
-      if(_clock.div==16)
+      div++;
+      if(div==16)
       {
-        _clock.div = 0;
+        div = 0;
 	_div++;
 	_div &= 255;
       }
@@ -60,16 +57,16 @@ class TIMER
       switch(_tac & 3)
       {
         case 0:
-	  if(_clock.main >= 64) step();
+	  if(main >= 64) step();
 	  break;
 	case 1:
-	  if(_clock.main >=  1) step();
+	  if(main >=  1) step();
 	  break;
 	case 2:
-	  if(_clock.main >=  4) step();
+	  if(main >=  4) step();
 	  break;
 	case 3:
-	  if(_clock.main >= 16) step();
+	  if(main >= 16) step();
 	  break;
       }
     }
