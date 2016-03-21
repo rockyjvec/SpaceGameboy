@@ -64,25 +64,10 @@ class GPU
   {
 //      SpaceGameboy.Echo("GPU Constructor");
       this.screen = screen;
-      for(int n = 0; n < 256; n++)
-      {
-            if(n == 0)
-            {
-                colors[n] = '\uE00F';                
-            }
-            else if (n == 96)
-            {
-                colors[n] = '\uE00E';                
-            }
-            else if(n == 192)
-            {
-                colors[n] = '\uE00D';                
-            }
-            else if(n == 255)
-            {
-                colors[n] = '\uE006';
-            }
-      }
+      colors[0] = '\uE00F';                
+      colors[96] = '\uE00E';                
+      colors[192] = '\uE00D';                
+      colors[255] = '\uE006';
   }
 
   public void update()
