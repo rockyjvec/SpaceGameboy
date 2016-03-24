@@ -1,4 +1,4 @@
-class TIMER 
+/*class TIMER 
 {
 	private int _div = 0;
 	private int _tma = 0;
@@ -52,7 +52,7 @@ class TIMER
 			}
 		}
 
-		if((_tac & 4)>0)
+		if((_tac & 4)!=0)
 		{
 			switch(_tac & 3)
 			{
@@ -92,4 +92,4 @@ class TIMER
 		case 0xFF07: _tac = val&7; break;
 		}
 	}
-}
+}*/

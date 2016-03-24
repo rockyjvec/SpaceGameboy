@@ -15,12 +15,6 @@ class GPUData //: IComparable<GPUData>
 	}
 }
 
-class GPUPalette {
-	public int[] bg = new int[4];
-	public int[] obj0 = new int[4];
-	public int[] obj1 = new int[4];
-}
-
 class GPU 
 {
 	public char[] data = new char[161*144];
@@ -30,8 +24,11 @@ class GPU
 	int[][][] _tilemap = new int[512][][];
 	GPUData[] _objdata = new GPUData[40];
 	//  List<GPUData> _objdatasorted;
-	GPUPalette _palette = new GPUPalette();
 	int[] _scanrow = new int[160];
+    
+    char[] bgPalette = new char[4];
+    char[] obj0Palette = new char[4];
+    char[] obj1Palette = new char[4];
 
 	int _curline = 0;
 	int _curscan = 0;
@@ -51,8 +48,6 @@ class GPU
 	int _bgtilebase = 0x0000;
 	int _bgmapbase = 0x1800;
 
-	char[] colors = new char[256];
-	
 	int wpixel = 0;
 
 	IMyTextPanel screen;
@@ -64,11 +59,6 @@ class GPU
 	{
 		//      SpaceGameboy.Echo("GPU Constructor");
 		this.screen = screen;
-        for(int i = 0; i < 256; i++) colors[i] = '\uE00F';
-		colors[0] = '\uE00F';                
-		colors[96] = '\uE00E';                
-		colors[192] = '\uE00D';                
-		colors[255] = '\uE006';
 	}
 
 	public void drawNow()
@@ -95,14 +85,21 @@ class GPU
 
 		// SpaceGameboy.Echo("Clearing palettes");
 
-		for(int i=0; i<4; i++) 
-		{
-			_palette.bg[i] = 0xFF;
-			_palette.obj0[i] = 0xFF;
-			_palette.obj1[i] = 0xFF;
+        bgPalette[0] = '\uE00F';
+        bgPalette[1] = '\uE00E';
+        bgPalette[2] = '\uE00D';
+        bgPalette[3] = '\uE006';
 
-		}
+        obj0Palette[0] = '\uE00F';
+        obj0Palette[1] = '\uE00E';
+        obj0Palette[2] = '\uE00D';
+        obj0Palette[3] = '\uE006';
 
+        obj1Palette[0] = '\uE00F';
+        obj1Palette[1] = '\uE00E';
+        obj1Palette[2] = '\uE00D';
+        obj1Palette[3] = '\uE006';
+        
 		// SpaceGameboy.Echo("Clearing tilemaps");
 		for(int i=0;i<512;i++)
 		{
@@ -122,12 +119,12 @@ class GPU
 		//    Echo("GPU: Initialising screen.");
 
 		//SpaceGameboy.Echo("Clearing screen data 1/2");
-		for(int i = 0; i < data.Length / 2; i++) data[i] = colors[0xFF];
+		for(int i = 0; i < data.Length / 2; i++) data[i] = bgPalette[3];
 	}
 	public void reset3()
 	{
 		// SpaceGameboy.Echo("Clearing screen data 2/2");
-		for(int i = data.Length / 2; i < data.Length; i++) data[i] = colors[0xFF];
+		for(int i = data.Length / 2; i < data.Length; i++) data[i] = bgPalette[3];
 	}
 	public void reset4()
 	{
@@ -163,7 +160,8 @@ class GPU
 	}
 
 	int t, x, y, mapbase, linebase, tile, cnt, curline161, i;
-	int[] tilerow, pal;
+	int[] tilerow;
+    char[] pal;
 	GPUData obj;
 	public void checkline() {
 		if (!this.draw && !this.startDraw)
@@ -182,7 +180,7 @@ class GPU
 								this.startDraw = false;
 								this.draw = true;
 							}
-							mMU._if |= 1;
+							//mMU._if |= 1;
 						} else {
 							_linemode = 2;
 						}
@@ -234,7 +232,7 @@ class GPU
 									tilerow = _tilemap [tile] [y];
 									for (wpixel = 160; wpixel > 0; wpixel--) {
 										_scanrow [159 - x] = tilerow [x];
-										data [linebase] = colors [_palette.bg [tilerow [x]]];
+										data [linebase] = bgPalette [tilerow [x]];
 										x++;
 										if (x == 8) { 
 											t = (t + 1) & 31;
@@ -251,7 +249,7 @@ class GPU
 									tilerow = _tilemap [_vram [mapbase + t]] [y];
 									for (wpixel = 160; wpixel > 0; wpixel--) {
 										_scanrow [159 - x] = tilerow [x];
-										data [linebase] = colors [_palette.bg [tilerow [x]]];
+										data [linebase] = bgPalette [tilerow [x]];
 										x++;
 										if (x == 8) {
 											t = (t + 1) & 31; 
@@ -280,17 +278,18 @@ class GPU
 											else
 												tilerow = _tilemap [obj.tile] [_curline - obj.y];
 
+                                            
 											if (obj.palette > 0)
-												pal = _palette.obj1;
+												pal = obj1Palette;
 											else
-												pal = _palette.obj0;
+												pal = obj0Palette;
 
 											linebase = (curline161 + obj.x);
 											if (obj.xflip > 0) {
 												for (x = 0; x < 8; x++) {
 													if (obj.x + x >= 0 && obj.x + x < 160) {
 														if (tilerow [7 - x] > 0 && (obj.prio > 0 || !(_scanrow [x] > 0))) {
-															data [linebase] = colors [pal [tilerow [7 - x]]];
+															data [linebase] = pal [tilerow [7 - x]];
 														}
 													}
 													linebase++;
@@ -299,7 +298,7 @@ class GPU
 												for (x = 0; x < 8; x++) {
 													if (obj.x + x >= 0 && obj.x + x < 160) {
 														if (tilerow [x] > 0 && (obj.prio > 0 || !(_scanrow [x] > 0))) {
-															data [linebase] = colors [pal [tilerow [x]]];
+															data [linebase] = pal [tilerow [x]];
 														}
 													}
 													linebase++;
@@ -434,10 +433,10 @@ class GPU
 			{
 				switch((val>>(i*2))&3)
 				{
-				case 0: _palette.bg[i] = 255; break;
-				case 1: _palette.bg[i] = 192; break;
-				case 2: _palette.bg[i] = 96; break;
-				case 3: _palette.bg[i] = 0; break;
+				case 3: bgPalette[i] = '\uE00F'; break;
+				case 2: bgPalette[i] = '\uE00E'; break;
+				case 1: bgPalette[i] = '\uE00D'; break;
+				case 0: bgPalette[i] = '\uE006'; break;
 				}
 			}
 			break;
@@ -448,10 +447,10 @@ class GPU
 			{
 				switch((val>>(i*2))&3)
 				{
-				case 0: _palette.obj0[i] = 255; break;
-				case 1: _palette.obj0[i] = 192; break;
-				case 2: _palette.obj0[i] = 96; break;
-				case 3: _palette.obj0[i] = 0; break;
+				case 3: obj0Palette[i] = '\uE00F'; break;
+				case 2: obj0Palette[i] = '\uE00E'; break;
+				case 1: obj0Palette[i] = '\uE00D'; break;
+				case 0: obj0Palette[i] = '\uE006'; break;
 				}
 			}
 			break;
@@ -462,12 +461,13 @@ class GPU
 			{
 				switch((val>>(i*2))&3)
 				{
-				case 0: _palette.obj1[i] = 255; break;
-				case 1: _palette.obj1[i] = 192; break;
-				case 2: _palette.obj1[i] = 96; break;
-				case 3: _palette.obj1[i] = 0; break;
+				case 3: obj1Palette[i] = '\uE00F'; break;
+				case 2: obj1Palette[i] = '\uE00E'; break;
+				case 1: obj1Palette[i] = '\uE00D'; break;
+				case 0: obj1Palette[i] = '\uE006'; break;
 				}
 			}
+
 			break;
 		}
 	}
