@@ -1,5 +1,5 @@
 // Adjust the throttle to eliminate complexity errors.  Lower = slower and less complex
-static int throttle = 1200;
+static int throttle = 1300;
 static string lcdName = "SpaceGameboy LCD";
 
 // Opus 5 rom
@@ -47,6 +47,7 @@ public void Main(string argument)
                     break;
             }
             gb.frame(throttle, stage);
+            if((stage % 2) == 0) gb.update();
             break;
     }
     stage++;

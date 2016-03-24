@@ -47,6 +47,7 @@ public void Main(string argument)
                     break;
             }
             gb.frame(throttle, stage);
+            if((stage % 2) == 0) gb.update();
             break;
     }
     stage++;
@@ -116,6 +117,7 @@ class GPU
 	{
 		//      SpaceGameboy.Echo("GPU Constructor");
 		this.screen = screen;
+        for(int i = 0; i < 256; i++) colors[i] = '\uE00F';
 		colors[0] = '\uE00F';                
 		colors[96] = '\uE00E';                
 		colors[192] = '\uE00D';                
@@ -131,10 +133,9 @@ class GPU
 
 	public void update()
 	{
+		screen.WritePublicText(new String(data), false);
 		screen.ShowTextureOnScreen();
 		screen.ShowPublicTextOnScreen();
-
-		screen.WritePublicText(new String(data), false);    
 	}
 
 	public void reset(Z80 z80, MMU mMU)
@@ -229,7 +230,6 @@ class GPU
 						if (_curline == 143) {
 							_linemode = 1;
 							if (this.draw) {
-								update ();
 								this.draw = false;
 							} else if (this.startDraw) {
 								this.startDraw = false;
@@ -843,6 +843,7 @@ class MMU
 		//Echo every 100 frames
 		//    if(stage % 100 == 0) Echo("Stepping Gameboy (PC = " + z80.r.pc + ")"); 
 		//var brk = document.getElementById('breakpoint').value;
+        if(((stage % 2) == 1)gPU.drawNow ();
 		for(;z80._clock.m < fclock && throttle > 0;throttle--)
 		{
 			//if(z80._halt>0) z80.r.m=1;
@@ -866,11 +867,14 @@ class MMU
 			z80._clock.m += z80.r.m;
 			gPU.checkline();
 			tIMER.inc();
-		} 
-			gPU.drawNow ();
-
+		}
 	}
 
+    public void update()
+    {
+        gPU.update();
+    }
+    
 	public void reset(byte[] rom, int stage) {
 		switch(stage)
 		{

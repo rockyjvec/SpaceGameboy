@@ -64,6 +64,7 @@ class GPU
 	{
 		//      SpaceGameboy.Echo("GPU Constructor");
 		this.screen = screen;
+        for(int i = 0; i < 256; i++) colors[i] = '\uE00F';
 		colors[0] = '\uE00F';                
 		colors[96] = '\uE00E';                
 		colors[192] = '\uE00D';                
@@ -79,10 +80,9 @@ class GPU
 
 	public void update()
 	{
+		screen.WritePublicText(new String(data), false);
 		screen.ShowTextureOnScreen();
 		screen.ShowPublicTextOnScreen();
-
-		screen.WritePublicText(new String(data), false);    
 	}
 
 	public void reset(Z80 z80, MMU mMU)
@@ -177,7 +177,6 @@ class GPU
 						if (_curline == 143) {
 							_linemode = 1;
 							if (this.draw) {
-								update ();
 								this.draw = false;
 							} else if (this.startDraw) {
 								this.startDraw = false;
