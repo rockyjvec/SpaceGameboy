@@ -51,7 +51,7 @@ class GPU
 	int wpixel = 0;
 
 	IMyTextPanel screen;
-	bool draw = true, startDraw = false;
+	bool draw = true, startDraw = false, ready = false;
 	Z80 z80;
 	MMU mMU;
 
@@ -70,9 +70,12 @@ class GPU
 
 	public void update()
 	{
-		screen.WritePublicText(new String(data), false);
-		screen.ShowTextureOnScreen();
-		screen.ShowPublicTextOnScreen();
+        if(ready)
+        {
+            screen.WritePublicText(new String(data), false);
+            screen.ShowTextureOnScreen();
+            screen.ShowPublicTextOnScreen();
+        }
 	}
 
 	public void reset(Z80 z80, MMU mMU)
@@ -164,7 +167,7 @@ class GPU
     char[] pal;
 	GPUData obj;
 	public void checkline() {
-		if (!this.draw && !this.startDraw)
+		if (!this.draw && !this.startDraw && !this.ready)
 			return;
 		_modeclocks += z80.r.m;
 			switch (_linemode) {
@@ -176,6 +179,7 @@ class GPU
 							_linemode = 1;
 							if (this.draw) {
 								this.draw = false;
+                                this.ready = true;
 							} else if (this.startDraw) {
 								this.startDraw = false;
 								this.draw = true;
