@@ -1,4 +1,4 @@
-class GPUData //: IComparable<GPUData>
+class GPUData
 {
 	public int tile, palette, yflip, xflip, prio, num, y, x;
 	public GPUData(int num)
@@ -41,10 +41,14 @@ class GPU
 
 	bool _lcdon = false;
 	bool _bgon = false;
-	bool _objon = false;
+	bool _winTransparent = false;
+	bool _winon = false;
+    int winx = 7;
+    int winy = 0;
 
-	bool _objsize = false;
+	int _objsize = 8;
 
+    int _winbase = 0x1800;
 	int _bgtilebase = 0x0000;
 	int _bgmapbase = 0x1800;
 
@@ -145,9 +149,10 @@ class GPU
 
 		_lcdon = false;
 		_bgon = false;
-		_objon = false;
+		_winTransparent = true;
+        
 
-		_objsize = false;
+		_objsize = 8;
 		for(int i=0; i<160; i++) _scanrow[i] = 0;
 
 		for(int i=0; i<40; i++)
@@ -184,7 +189,7 @@ class GPU
 								this.startDraw = false;
 								this.draw = true;
 							}
-							//mMU._if |= 1;
+//							mMU._if |= 1;
 						} else {
 							_linemode = 2;
 						}
@@ -229,7 +234,7 @@ class GPU
 								x = _xscrl & 7;
 								t = (_xscrl >> 3) & 31;
 
-								if (_bgtilebase > 0) {
+								if (_bgtilebase != 0) {
 									tile = _vram [mapbase + t];
 									if (tile < 128)
 										tile = (256 + tile);
@@ -264,57 +269,96 @@ class GPU
 									}
 								}
 							}
-							if (_objon) {
-								cnt = 0;
-								if (_objsize) {
-									/*                for(var i=0; i<40; i++)
-                {
-                }*/
-								} else {
-									//                var pixel;
-									linebase = _curscan;
-									curline161 = _curline * 161;
-									for (i = 0; i < 40; i++) {
-										obj = _objdata [i];
-										if (obj.y <= _curline && (obj.y + 8) > _curline) {
-											if (obj.yflip > 0)
-												tilerow = _tilemap [obj.tile] [7 - (_curline - obj.y)];
-											else
-												tilerow = _tilemap [obj.tile] [_curline - obj.y];
+                            if (_winon && false) { // windows disabled for now until they are fixed
+								linebase = _curscan;
+								mapbase = _winbase + ((((_curline + winy) & 0xFF) >> 0x03) << 0x05);
+								y = (_curline + winy) & 7;
+								x = winx & 7;
+								t = (winx >> 3) & 31;
 
-                                            
-											if (obj.palette > 0)
-												pal = obj1Palette;
-											else
-												pal = obj0Palette;
-
-											linebase = (curline161 + obj.x);
-											if (obj.xflip > 0) {
-												for (x = 0; x < 8; x++) {
-													if (obj.x + x >= 0 && obj.x + x < 160) {
-														if (tilerow [7 - x] > 0 && (obj.prio > 0 || !(_scanrow [x] > 0))) {
-															data [linebase] = pal [tilerow [7 - x]];
-														}
-													}
-													linebase++;
-												}
-											} else {
-												for (x = 0; x < 8; x++) {
-													if (obj.x + x >= 0 && obj.x + x < 160) {
-														if (tilerow [x] > 0 && (obj.prio > 0 || !(_scanrow [x] > 0))) {
-															data [linebase] = pal [tilerow [x]];
-														}
-													}
-													linebase++;
-												}
+								if (_winbase != 0) {
+									tile = _vram [mapbase + t];
+									if (tile < 128)
+										tile = (256 + tile);
+									tilerow = _tilemap [tile] [y];
+									for (wpixel = 160; wpixel > 0; wpixel--) {
+										_scanrow [159 - x] = tilerow [x];
+                                        if(!_winTransparent || bgPalette [tilerow [x]] != '\uE00F')
+                                            data [linebase] = bgPalette [tilerow [x]];
+										x++;
+										if (x == 8) { 
+											t = (t + 1) & 31;
+											x = 0;
+											tile = _vram [mapbase + t];
+											if (tile < 128) {
+												tile = (256 + tile);                        
 											}
-											cnt++;
-											if (cnt > 10)
-												break;
+											tilerow = _tilemap [tile] [y]; 
 										}
+										linebase++;
+									}
+								} else {
+									tilerow = _tilemap [_vram [mapbase + t]] [y];
+									for (wpixel = 160; wpixel > 0; wpixel--) {
+										_scanrow [159 - x] = tilerow [x];
+                                        if(!_winTransparent || bgPalette [tilerow [x]] != '\uE00F')
+                                            data [linebase] = bgPalette [tilerow [x]];
+										x++;
+										if (x == 8) {
+											t = (t + 1) & 31; 
+											x = 0;
+											tilerow = _tilemap [_vram [mapbase + t]] [y];
+										}
+										linebase++;
 									}
 								}
-							}
+                                
+                            }                                
+							//if (_objon) 
+                            {
+						//		cnt = 0;
+                                linebase = _curscan;
+                                curline161 = _curline * 161;
+                                for (i = 0; i < 40; i++) {
+                                    obj = _objdata [i];
+                                    if (obj.y <= _curline && (obj.y + _objsize) > _curline) {
+                                        if (obj.yflip > 0)
+                                            tilerow = _tilemap [obj.tile+((((_objsize - 1 - (_curline - obj.y)))>7)?1:0)] [(_objsize - 1 - (_curline - obj.y)) % 8];
+                                        else
+                                            tilerow = _tilemap [obj.tile+(((_curline - obj.y)>7)?1:0)] [(_curline - obj.y) % 8];
+
+                                        
+                                        if (obj.palette > 0)
+                                            pal = obj1Palette;
+                                        else
+                                            pal = obj0Palette;
+
+                                        linebase = (curline161 + obj.x);
+                                        if (obj.xflip > 0) {
+                                            for (x = 0; x < 8; x++) {
+                                                if (obj.x + x >= 0 && obj.x + x < 160) {
+                                                    if (tilerow [7 - x] > 0 && (obj.prio > 0 || !(_scanrow [x] > 0))) {
+                                                        data [linebase] = pal [tilerow [7 - x]];
+                                                    }
+                                                }
+                                                linebase++;
+                                            }
+                                        } else {
+                                            for (x = 0; x < 8; x++) {
+                                                if (obj.x + x >= 0 && obj.x + x < 160) {
+                                                    if (tilerow [x] > 0 && (obj.prio > 0 || !(_scanrow [x] > 0))) {
+                                                        data [linebase] = pal [tilerow [x]];
+                                                    }
+                                                }
+                                                linebase++;
+                                            }
+                                        }
+                                  //      cnt++;
+                                     //   if (cnt > 10)
+                                     //       break;
+                                    }
+                                }
+                            }
 						}
 					}
 					break;
@@ -340,27 +384,35 @@ class GPU
 
 	public void updateoam(int addr,int val) {
 		addr-=0xFE00;
-		var obj=addr>>2;
-		if(obj<40)
+		var o=addr>>2;
+      //  var sorted = new SortedDictionary<int, GPUData>();
+		if(o<40&&o>=0)
 		{
 			switch(addr&3)
 			{
-			case 0: _objdata[obj].y=val-16; break;
-			case 1: _objdata[obj].x=val-8; break;
+			case 0: _objdata[o].y=val-16; break;
+			case 1: _objdata[o].x=val-8; break;
 			case 2:
-				if(_objsize) _objdata[obj].tile = (val&0xFE);
-				else _objdata[obj].tile = val;
+				if(_objsize != 8) _objdata[o].tile = (val&0xFE);
+				else _objdata[o].tile = val;
 				break;
 			case 3:
-				_objdata[obj].palette = ((val&0x10)>0)?1:0;
-				_objdata[obj].xflip = ((val&0x20)>0)?1:0;
-				_objdata[obj].yflip = ((val&0x40)>0)?1:0;
-				_objdata[obj].prio = ((val&0x80)>0)?1:0;
+				_objdata[o].palette = ((val&0x10)>0)?1:0;
+				_objdata[o].xflip = ((val&0x20)>0)?1:0;
+				_objdata[o].yflip = ((val&0x40)>0)?1:0;
+				_objdata[o].prio = ((val&0x80)>0)?1:0;
 				break;
 			}
+          //  sorted.Add((-_objdata[o].x * 100) - _objdata[o].num, _objdata[o]);
 		}
+/*        int i = 0;
+        foreach(var q in sorted)
+        {
+            _objdata[i] = q.Value;
+            i++;
+        }*/
 		//    _objdatasorted = new List<GPUData>(_objdata);
-		// _objdatasorted.Sort();
+//		Array.Sort(_objdata);
 
 	}
 
@@ -370,10 +422,12 @@ class GPU
 		{
 		case 0:
 			return ((_lcdon?0x80:0)|
+				((_winbase==0x1C00)?0x40:0)|
+                (_winon?0x20:0x00)|
 				((_bgtilebase==0x0000)?0x10:0)|
 				((_bgmapbase==0x1C00)?0x08:0)|
-				(_objsize?0x04:0)|
-				(_objon?0x02:0x00)|
+				((_objsize == 16)?0x04:0)|
+				(_winTransparent?0x00:0x02)|
 				(_bgon?0x01:0x00));
 
 		case 1:
@@ -403,10 +457,12 @@ class GPU
 		{
 		case 0:
 			_lcdon = ((val&0x80)>0)?true:false;
+            _winbase = ((val&0x40)>0)?0x1C00:0x1800;
+            _winon = ((val&0x20)>0)?true:false;
 			_bgtilebase = ((val&0x10)>0)?0x0000:0x0800;
 			_bgmapbase = ((val&0x08)>0)?0x1C00:0x1800;
-			_objsize = ((val&0x04)>0)?true:false;
-			_objon = ((val&0x02)>0)?true:false;
+			_objsize = ((val&0x04)>0)?16:8;
+			_winTransparent = ((val&0x02)>0)?false:true;
 			_bgon = ((val&0x01)>0)?true:false;
 			break;
 
@@ -418,10 +474,11 @@ class GPU
 			_xscrl = val;
 			break;
 
-		case 5: // this used to have _raster = val; but I moved it below
+		case 5: 
+			_raster = val;
+            break;
 			// OAM DMA
 		case 6:
-			if(gaddr == 5) _raster = val;
 
 			for(i=0; i<160; i++)
 			{
@@ -473,6 +530,13 @@ class GPU
 			}
 
 			break;
+        case 10: // WNDPOSY
+            winy = val;
+            break;
+        case 11:
+            if(val > 166) _winon = false;
+            winx = val;
+            break;
 		}
 	}
 }

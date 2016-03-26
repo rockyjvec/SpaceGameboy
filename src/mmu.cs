@@ -56,12 +56,8 @@
 		}
 
 		public void load(byte[] rom) {
-			for (int i = 0; i < rom.Length; i++) {
-			}
 			_rom = rom;
 			_carttype = _rom[0x0147];
-
-			//    Echo("MMU: ROM loaded, "+_rom.Length+" ints.");
 		}
 		public int rb(int addr) {
 			if(addr <= 0x3FFF)
@@ -154,6 +150,8 @@
 				switch(_carttype)
 				{
 				case 1:
+				case 2:
+				case 3:
 					_mbc1.ramon = ((val&0xF)==0xA)?1:0;
 					break;
 				}
@@ -164,6 +162,8 @@
 				switch(_carttype)
 				{
 				case 1:
+				case 2:
+				case 3:
 					_mbc1.rombank &= 0x60;
 					val &= 0x1F;
 					if(!(val!=0)) val=1;
@@ -180,6 +180,8 @@
 				switch(_carttype)
 				{
 				case 1:
+				case 2:
+				case 3:
 					if(_mbc1.mode != 0)
 					{
 						_mbc1.rambank = (val&3);

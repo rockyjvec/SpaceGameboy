@@ -1,0 +1,3 @@
+http://fms.komkon.org/GameBoy/Tech/Software.html
+http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Graphics
+http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf
