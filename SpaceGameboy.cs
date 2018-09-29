@@ -42,6 +42,11 @@ Dictionary<string, bool> tgl = new Dictionary<string, bool>() {
     {"left", false},
 };
 
+public Program()
+{
+	Runtime.UpdateFrequency = UpdateFrequency.Update1;
+}
+
 public void Main(string arg)
 {
     switch(stage)
@@ -75,47 +80,43 @@ public void Main(string arg)
                     if(taps[b] == 0) gb.keyup(b);
                 }
             }
-            switch(arg)
+            if(arg.EndsWith("On")) gb.keydown(arg.Remove(arg.Length - 2));
+            else if(arg.EndsWith("Off")) gb.keyup(arg.Remove(arg.Length - 3));
+            else if(arg.EndsWith("Toggle"))
             {
-                case "upOn":case "downOn":case "rightOn":case "leftOn":case "aOn":case "bOn":case "startOn":case "selectOn":
-                    gb.keydown(arg.Remove(arg.Length - 2));
-                    break;
-                case "upOff":case "downOff":case "rightOff":case "leftOff":case "aOff":case "bOff":case "startOff":case "selectOff":
-                    gb.keyup(arg.Remove(arg.Length - 3));
-                    break;
-                case "upToggle":case "downToggle":case "rightToggle":case "leftToggle":case "aToggle":case "bToggle":case "startToggle":case "selectToggle":
-                    string btn = arg.Remove(arg.Length - 6);
-                    if(tgls[btn])
-                    {
-                        gb.keyup(btn);
-                        tgls[btn] = false;
-                    }
-                    else
-                    {
-                        gb.keydown(btn);
-                        tgls[btn] = true;                        
-                    }
-                    break;
-                case "up":case "down":case "right":case "left":case "a":case "b":case "start":case "select":
-                    gb.keydown(arg);
-                    taps[arg] = tapLength;
-                    break;
-                case "upArrow":case "downArrow":case "rightArrow":case "leftArrow":
-                    btn = arg.Remove(arg.Length - 5);
+                string btn = arg.Remove(arg.Length - 6);
+                if(tgls[btn])
+                {
+                    gb.keyup(btn);
+                    tgls[btn] = false;
+                }
+                else
+                {
                     gb.keydown(btn);
-                    foreach(var b in new string[]{"up", "down", "right", "left"})
+                    tgls[btn] = true;                        
+                }
+            }
+            else if(arg.EndsWith("Arrow"))
+            {
+                string btn = arg.Remove(arg.Length - 5);
+                gb.keydown(btn);
+                foreach(var b in new string[]{"up", "down", "right", "left"})
+                {
+                    if(tgl[b])
                     {
-                        if(tgl[b])
-                        {
-                            gb.keyup(b);
-                            tgl[b] = false;
-                        }
-                        else if(btn == b)
-                        {
-                            tgl[btn] = true;        
-                        }
-                    }                    
-                    break;
+                        gb.keyup(b);
+                        tgl[b] = false;
+                    }
+                    else if(btn == b)
+                    {
+                        tgl[btn] = true;        
+                    }
+                }                    
+            }
+            else
+            {
+                gb.keydown(arg);
+                taps[arg] = tapLength;
             }
             gb.frame(throttle, frameSkips, stage);
             if((stage % 2) == 0) gb.update();

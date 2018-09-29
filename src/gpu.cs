@@ -61,7 +61,6 @@ class GPU
 
 	public GPU(IMyTextPanel screen)
 	{
-		//      SpaceGameboy.Echo("GPU Constructor");
 		this.screen = screen;
         screen.ShowPublicTextOnScreen();
 	}
@@ -78,7 +77,6 @@ class GPU
         if(ready)
         {
             screen.WritePublicText(new String(data), false);
-//            screen.ShowTextureOnScreen();
         }
 	}
 
